@@ -5,7 +5,7 @@ import docker
 
 container_bp = Blueprint('container', __name__)
 
-@container_bp.route('/containers/list', methods=['GET'])
+@container_bp.route('/api/containers/list', methods=['GET'])
 @jwt_required()
 def list_containers():
     client = docker.from_env()
@@ -20,7 +20,7 @@ def list_containers():
         for container in containers
     ])
 
-@container_bp.route('/containers/start/<string:container_id>', methods=['POST'])
+@container_bp.route('/api/containers/start/<string:container_id>', methods=['POST'])
 @jwt_required()
 def start_container(container_id):
     client = docker.from_env()
@@ -31,7 +31,7 @@ def start_container(container_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 400
         
-@container_bp.route('/containers/stop/<string:container_id>', methods=['POST'])
+@container_bp.route('/api/containers/stop/<string:container_id>', methods=['POST'])
 @jwt_required()
 def stop_container(container_id):
     client = docker.from_env()
@@ -42,7 +42,7 @@ def stop_container(container_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-@container_bp.route('/containers/restart/<string:container_id>', methods=['POST'])
+@container_bp.route('/api/containers/restart/<string:container_id>', methods=['POST'])
 @jwt_required()
 def restart_container(container_id):
     client = docker.from_env()
@@ -56,7 +56,7 @@ def restart_container(container_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-@container_bp.route('/containers/remove/<string:container_id>', methods=['DELETE'])
+@container_bp.route('/api/containers/remove/<string:container_id>', methods=['DELETE'])
 @jwt_required()
 def remove_container(container_id):
     client = docker.from_env()

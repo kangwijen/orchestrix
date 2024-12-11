@@ -5,7 +5,7 @@ from models import User
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -21,7 +21,7 @@ def login():
 
     return jsonify({"message": "Wrong username or password"}), 401
 
-@auth_bp.route('/logout', methods=['POST'])
+@auth_bp.route('/api/logout', methods=['POST'])
 @jwt_required()
 def logout():
     return jsonify({"message": "Successfully logged out"}), 200

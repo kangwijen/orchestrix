@@ -13,7 +13,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -46,7 +45,7 @@ const DockerManagementPage = () => {
         setLoading(true);
         try {
             const response = await fetch(
-                "http://localhost:5000/containers/list",
+                "http://localhost:5000/api/containers/list",
                 {
                     headers: getHeaders(),
                 },
@@ -69,7 +68,7 @@ const DockerManagementPage = () => {
     const handleStart = async (containerId: string) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/containers/start/${containerId}`,
+                `http://localhost:5000/api/containers/start/${containerId}`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -96,7 +95,7 @@ const DockerManagementPage = () => {
     const handleStop = async (containerId: string) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/containers/stop/${containerId}`,
+                `http://localhost:5000/api/containers/stop/${containerId}`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -123,7 +122,7 @@ const DockerManagementPage = () => {
     const handleRestart = async (containerId: string) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/containers/restart/${containerId}`,
+                `http://localhost:5000/api/containers/restart/${containerId}`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -198,7 +197,16 @@ const DockerManagementPage = () => {
                                                 {container.image}
                                             </TableCell>
                                             <TableCell>
-                                                {container.status}
+                                                {container.status ===
+                                                "running" ? (
+                                                    <span className="text-green-600">
+                                                        Running
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-red-600">
+                                                        Stopped
+                                                    </span>
+                                                )}
                                             </TableCell>
                                             <TableCell>
                                                 {container.status ===

@@ -31,7 +31,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
-                <title>{ metadata.title?.toString() }</title>
+                <title>{metadata.title?.toString()}</title>
             </head>
             <body>
                 <ThemeProvider attribute="class" defaultTheme="dark">

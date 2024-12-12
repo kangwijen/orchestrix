@@ -3,8 +3,10 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash
 
 import docker
-
 from models import User
+from datetime import datetime
+import pytz
+from dateutil.parser import isoparse
 
 container_bp = Blueprint('container', __name__)
 
@@ -13,12 +15,19 @@ container_bp = Blueprint('container', __name__)
 def list_containers():
     client = docker.from_env()
     containers = client.containers.list(all=True)
+    server_tz = pytz.timezone(datetime.now(pytz.timezone('UTC')).tzname())
+    
     return jsonify([
         {
             "id": container.short_id,
             "name": container.name,
             "status": container.status,
-            "image": container.image.tags[0] if container.image.tags else "unknown"
+            "image": container.image.tags[0] if container.image.tags else "unknown",
+            "created": isoparse(container.attrs['Created'])
+                      .astimezone(server_tz)
+                      .strftime('%H:%M:%S %d-%m-%Y'),
+            "ports": container.attrs['NetworkSettings']['Ports'],
+            "size": container.attrs.get('SizeRootFs', 'unknown')
         }
         for container in containers
     ])

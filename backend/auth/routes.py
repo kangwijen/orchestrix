@@ -21,6 +21,15 @@ def login():
 
     return jsonify({"message": "Wrong username or password"}), 401
 
+@auth_bp.route('/api/user', methods=['GET'])
+@jwt_required()
+def user():
+    current_user = get_jwt()
+    if current_user:
+        return jsonify({"message": "User found"}), 200
+    
+    return jsonify({"message": "User not found"}), 404
+
 @auth_bp.route('/api/logout', methods=['POST'])
 @jwt_required()
 def logout():

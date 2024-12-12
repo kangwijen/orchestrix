@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { isAuthenticated } from "@/lib/auth";
 import {
     Table,
     TableBody,
@@ -14,7 +13,25 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+
+import { RotateCw } from "lucide-react";
 
 interface Container {
     id: string;
@@ -24,9 +41,8 @@ interface Container {
 }
 
 const DockerManagementPage = () => {
-    const router = useRouter();
     const [containers, setContainers] = useState<Container[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [removePassword, setRemovePassword] = useState("");
     const { toast } = useToast();
 
     const getHeaders = () => {
@@ -42,7 +58,6 @@ const DockerManagementPage = () => {
     };
 
     const fetchContainers = async () => {
-        setLoading(true);
         try {
             const response = await fetch(
                 "http://localhost:5000/api/containers/list",
@@ -60,8 +75,6 @@ const DockerManagementPage = () => {
                 description: "Failed to fetch containers",
                 className: "bg-red-900 text-white border-none",
             });
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -146,32 +159,50 @@ const DockerManagementPage = () => {
         }
     };
 
-    useEffect(() => {
-        if (!isAuthenticated()) {
-            router.push("/login");
-            return;
+    const handleRemove = async (containerId: string) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/containers/remove/${containerId}`,
+                {
+                    method: "DELETE",
+                    headers: getHeaders(),
+                    body: JSON.stringify({ password: removePassword })
+                },
+            );
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message);
+            toast({
+                title: "Success",
+                description: "Container removed successfully",
+                className: "bg-green-900 text-white border-none",
+            });
+            setRemovePassword("");
+            fetchContainers();
+        } catch (error: any) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: `Failed to remove container: ${error.message}`,
+                className: "bg-red-900 text-white border-none",
+            });
         }
-        fetchContainers();
-    }, [router]);
+    };
 
-    if (loading) {
-        return (
-            <div className="flex min-h-screen items-center justify-center">
-                <Card>
-                    <CardContent className="flex items-center gap-2 p-6">
-                        <Loader2 className="h-8 w-8 animate-spin" />
-                        <p>Loading...</p>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
+    useEffect(() => {
+        fetchContainers();
+    }, []);
 
     return (
         <div className="container mx-auto px-4 py-6 sm:py-8">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4">
-                Docker Management
-            </h1>
+            <div className="flex flex-row items-center text-center space-x-4 mb-4 justify-between">
+                <h1 className="text-2xl sm:text-3xl font-bold">
+                    Docker Management 
+                </h1>
+                <Button onClick={fetchContainers}>
+                    <RotateCw className="h-6 w-6 inline-block" />
+                    Refresh
+                </Button>
+            </div>
             <Card>
                 <CardContent className="p-4">
                     <div className="overflow-x-auto">
@@ -212,28 +243,74 @@ const DockerManagementPage = () => {
                                                 {container.status ===
                                                 "running" ? (
                                                     <div className="flex flex-col justify-center space-y-2 items-center md:flex-row md:space-x-2 md:space-y-0">
-                                                        <Button
-                                                            variant="destructive"
-                                                            className="bg-red-600 hover:bg-red-700 text-white"
-                                                            onClick={() =>
-                                                                handleStop(
-                                                                    container.id,
-                                                                )
-                                                            }
-                                                        >
-                                                            Stop
-                                                        </Button>
-                                                        <Button
-                                                            variant="secondary"
-                                                            className="bg-blue-600 hover:bg-blue-700"
-                                                            onClick={() =>
-                                                                handleRestart(
-                                                                    container.id,
-                                                                )
-                                                            }
-                                                        >
-                                                            Restart
-                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger
+                                                                asChild
+                                                            >
+                                                                <Button className="bg-red-600 hover:bg-red-700 text-white">
+                                                                    Stop
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>
+                                                                        Are you absolutely sure?
+                                                                    </AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        This action will stop the container and all unsaved data will be lost.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel className="bg-green-600 hover:bg-green-700 text-white">
+                                                                        Cancel
+                                                                    </AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        className="bg-red-600 hover:bg-red-700 text-white"
+                                                                        onClick={() =>
+                                                                            handleStop(
+                                                                                container.id,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Continue
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger
+                                                                asChild
+                                                            >
+                                                                <Button className="bg-blue-600 hover:bg-blue-700">
+                                                                    Restart
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>
+                                                                        Are you absolutely sure?
+                                                                    </AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        This action will restart the container and all unsaved data will be lost.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel className="bg-green-600 hover:bg-green-700 text-white">
+                                                                        Cancel
+                                                                    </AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        className="bg-red-600 hover:bg-red-700 text-white"
+                                                                        onClick={() =>
+                                                                            handleRestart(
+                                                                                container.id,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Continue
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
                                                     </div>
                                                 ) : (
                                                     <div className="flex flex-col justify-center space-y-2 items-center md:flex-row md:space-x-2 md:space-y-0">
@@ -248,6 +325,47 @@ const DockerManagementPage = () => {
                                                         >
                                                             Start
                                                         </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger
+                                                                asChild
+                                                            >
+                                                                <Button className="bg-red-600 hover:bg-red-700">
+                                                                Remove
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>
+                                                                        Are you absolutely sure?
+                                                                    </AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        This action will remove the container and all unsaved data will be lost. Enter your password to confirm:
+                                                                        <Input 
+                                                                            type="password" 
+                                                                            placeholder="Password" 
+                                                                            className="mt-4" 
+                                                                            value={removePassword}
+                                                                            onChange={(e) => setRemovePassword(e.target.value)}
+                                                                        />
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel className="bg-green-600 hover:bg-green-700 text-white">
+                                                                        Cancel
+                                                                    </AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        className="bg-red-600 hover:bg-red-700 text-white"
+                                                                        onClick={() =>
+                                                                            handleRemove(
+                                                                                container.id,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        Continue
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
                                                     </div>
                                                 )}
                                             </TableCell>

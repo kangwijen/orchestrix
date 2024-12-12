@@ -1,44 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { isAuthenticated } from "@/lib/auth";
-import { Loader2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { SiTypescript, SiReact, SiNextdotjs, SiTailwindcss, SiFlask, SiSqlite, SiSqlalchemy } from "react-icons/si";
+import {
+    SiTypescript,
+    SiReact,
+    SiNextdotjs,
+    SiTailwindcss,
+    SiFlask,
+    SiSqlite,
+    SiSqlalchemy,
+} from "react-icons/si";
 
 const Dashboard = () => {
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        if (!isAuthenticated()) {
-            router.push("/login");
-        } else {
-            setIsLoading(false);
-        }
-    }, [router]);
-
-    if (isLoading) {
-        return (
-            <div className="flex min-h-screen items-center justify-center">
-                <Card>
-                    <CardContent className="flex items-center gap-2 p-6">
-                        <Loader2 className="h-8 w-8 animate-spin" />
-                        <p>Loading...</p>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
-
     return (
         <div className="container mx-auto min-h-screen flex flex-col items-center justify-center p-4 gap-8">
             <h1 className="text-4xl sm:text-6xl font-bold text-center">
-                Welcome to the Dashboard!
+                Welcome to the Orchestrix!
             </h1>
             <h2 className="text-lg sm:text-xl text-center">
-                Made with love by <a href="https://github.com/kangwijen" target="_blank" className="text-blue-500">kangwijen</a> using:
+                Made with love by{" "}
+                <a
+                    href="https://github.com/kangwijen"
+                    target="_blank"
+                    className="text-blue-500"
+                >
+                    kangwijen
+                </a>{" "}
+                using:
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
                 <div className="flex flex-col items-center gap-2 transition-transform hover:scale-110">

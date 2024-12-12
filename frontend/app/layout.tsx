@@ -8,6 +8,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { Card, CardContent } from "@/components/ui/card";
+import { metadata } from "./metadata";
 import "./globals.css";
 
 export default function RootLayout({
@@ -19,13 +20,19 @@ export default function RootLayout({
     const [isAuthed, setIsAuthed] = useState(false);
 
     useEffect(() => {
-        setIsAuthed(isAuthenticated());
-        setIsLoading(false);
+        const checkAuth = async () => {
+            const authed = await isAuthenticated();
+            setIsAuthed(authed);
+            setIsLoading(false);
+        };
+        checkAuth();
     }, []);
 
     return (
         <html lang="en" suppressHydrationWarning>
-            <head />
+            <head>
+                <title>{ metadata.title?.toString() }</title>
+            </head>
             <body>
                 <ThemeProvider attribute="class" defaultTheme="dark">
                     {isLoading ? (

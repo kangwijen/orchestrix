@@ -41,7 +41,7 @@ export function AppSidebar() {
     };
 
     return (
-        <Sidebar className="p-2 sm:p-4">
+        <Sidebar>
             <SidebarHeader />
             <SidebarContent>
                 <SidebarGroup>

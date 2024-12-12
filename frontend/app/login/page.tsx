@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +16,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Cookies from "js-cookie";
-
 const formSchema = z.object({
     username: z.string().min(1, "Username is required"),
     password: z.string().min(1, "Password is required"),
@@ -25,14 +23,6 @@ const formSchema = z.object({
 
 const Login = () => {
     const [error, setError] = useState<string | null>(null);
-    const router = useRouter();
-
-    useEffect(() => {
-        const token = Cookies.get("accessToken");
-        if (token) {
-            router.push("/dashboard");
-        }
-    }, [router]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

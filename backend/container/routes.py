@@ -1,7 +1,10 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.security import check_password_hash
 
 import docker
+
+from models import User
 
 container_bp = Blueprint('container', __name__)
 
@@ -60,6 +63,17 @@ def restart_container(container_id):
 @jwt_required()
 def remove_container(container_id):
     client = docker.from_env()
+    data = request.get_json()
+    username = get_jwt_identity()
+    password = data.get('password')
+    
+    if not password:
+        return jsonify({"message": "Password is required"}), 403
+    
+    user = User.query.filter_by(username=username).first()
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({"message": "Invalid password"}), 403
+    
     try:
         container = client.containers.get(container_id)
         if container.status == "running":

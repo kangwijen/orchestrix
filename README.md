@@ -1,7 +1,7 @@
 # Orchestrix
 **All-in-One DevOps Management Platform**  
 
-Orchestrix is a modern DevOps management platform to streamline the orchestration of tools like Docker, Ansible, and more. 
+Orchestrix is a modern DevOps management platform to streamline the management of tools like Docker, Ansible, and more. 
 
 Simplify workflows, monitor deployments, and manage your infrastructure seamlessly, all in one place.
 
@@ -12,8 +12,8 @@ Simplify workflows, monitor deployments, and manage your infrastructure seamless
     <summary>Container Management</summary>
     <ul>
         <li><input type="checkbox" checked disabled> List all containers</li>
-        <li><input type="checkbox" disabled>Create a container</li>
-        <li><input type="checkbox" disabled>Remove a container</li>
+        <li><input type="checkbox" disabled>Create a container (Broken)</li>
+        <li><input type="checkbox" checked disabled>Remove a container</li>
         <li><input type="checkbox" checked disabled>Start a container</li>
         <li><input type="checkbox" checked disabled>Stop a container</li>
         <li><input type="checkbox" checked disabled>Restart a container</li>
@@ -22,18 +22,6 @@ Simplify workflows, monitor deployments, and manage your infrastructure seamless
         <li><input type="checkbox" disabled>Inspect a container</li>
         <li><input type="checkbox" disabled>Get logs of a container</li>
         <li><input type="checkbox" disabled>Get stats of a container</li>
-    </ul>
-</details>
-
-<details>
-    <summary>Image Management</summary>
-    <ul>
-        <li><input type="checkbox" disabled>List all images</li>
-        <li><input type="checkbox" disabled>Pull an image</li>
-        <li><input type="checkbox" disabled>Push an image</li>
-        <li><input type="checkbox" disabled>Remove an image</li>
-        <li><input type="checkbox" disabled>Build an image</li>
-        <li><input type="checkbox" disabled>Tag an image</li>
     </ul>
 </details>
 

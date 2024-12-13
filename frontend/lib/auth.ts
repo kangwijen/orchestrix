@@ -21,7 +21,6 @@ export function isAuthenticated() {
         })
         .then((data) => !!data)
         .catch((error) => {
-            console.error("Failed to fetch user data:", error);
             return !!token;
         });
 }

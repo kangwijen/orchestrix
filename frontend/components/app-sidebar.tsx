@@ -1,4 +1,5 @@
-import { Home, Container, LogOut } from "lucide-react";
+import { Home, Container, LogOut, Plus, Settings, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import {
     Sidebar,
     SidebarContent,
@@ -19,13 +20,22 @@ const navigationItems = [
     },
 ];
 
-const dockerItems = [
-    {
-        title: "Docker",
-        url: "/container/docker",
-        icon: Container,
-    },
-];
+const dockerItems = {
+    title: "Docker",
+    icon: Container,
+    subItems: [
+        {
+            title: "Manage",
+            url: "/container/docker/manage",
+            icon: Settings,
+        },
+        {
+            title: "Create",
+            url: "/container/docker/create",
+            icon: Plus,
+        },
+    ],
+};
 
 export function AppSidebar() {
     const handleLogout = async () => {
@@ -74,21 +84,38 @@ export function AppSidebar() {
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {dockerItems.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a
-                                            href={item.url}
-                                            className="flex items-center gap-2 p-2 sm:p-3"
-                                        >
-                                            <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                            <Collapsible>
+                                <SidebarMenuItem>
+                                    <CollapsibleTrigger asChild>
+                                        <SidebarMenuButton className="flex items-center gap-2 p-2 sm:p-3 group" >
+                                            <dockerItems.icon/>
                                             <span className="text-sm sm:text-base">
-                                                {item.title}
+                                                {dockerItems.title}
                                             </span>
-                                        </a>
-                                    </SidebarMenuButton>
+                                            <ChevronDown className="ml-auto transition-transform data-[state=open]:rotate-180" />
+                                        </SidebarMenuButton>
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
+                                        <SidebarMenu className="ml-2">
+                                            {dockerItems.subItems.map((item) => (
+                                                <SidebarMenuItem key={item.title}>
+                                                    <SidebarMenuButton asChild>
+                                                        <a
+                                                            href={item.url}
+                                                            className="flex items-center gap-2 p-2 sm:p-3"
+                                                        >
+                                                            <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                                                            <span className="text-sm sm:text-base">
+                                                                {item.title}
+                                                            </span>
+                                                        </a>
+                                                    </SidebarMenuButton>
+                                                </SidebarMenuItem>
+                                            ))}
+                                        </SidebarMenu>
+                                    </CollapsibleContent>
                                 </SidebarMenuItem>
-                            ))}
+                            </Collapsible>
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

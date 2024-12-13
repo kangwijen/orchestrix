@@ -16,21 +16,22 @@ def list_containers():
     client = docker.from_env()
     containers = client.containers.list(all=True)
     server_tz = pytz.timezone(datetime.now(pytz.timezone('UTC')).tzname())
-    
-    return jsonify([
-        {
-            "id": container.short_id,
-            "name": container.name,
-            "status": container.status,
-            "image": container.image.tags[0] if container.image.tags else "unknown",
-            "created": isoparse(container.attrs['Created'])
-                      .astimezone(server_tz)
-                      .strftime('%H:%M:%S %d-%m-%Y'),
-            "ports": container.attrs['NetworkSettings']['Ports'],
-            "size": container.attrs.get('SizeRootFs', 'unknown')
+
+    container_list = []
+    for container in containers:
+        container_info = {
+            'id': container.short_id,
+            'name': container.name,
+            'status': container.status,
+            'image': container.image.tags[0] if container.image.tags else "unknown",
+            'created': isoparse(container.attrs['Created']) \
+                .astimezone(server_tz) \
+                .strftime('%H:%M:%S %d-%m-%Y'),
+            'ports': container.attrs['NetworkSettings']['Ports'],
         }
-        for container in containers
-    ])
+        container_list.append(container_info)
+
+    return jsonify(container_list), 200
 
 @container_bp.route('/api/containers/start/<string:container_id>', methods=['POST'])
 @jwt_required()
@@ -89,6 +90,40 @@ def remove_container(container_id):
             return jsonify({"message": f"Container {container_id} is running, stop it before removing."}), 400
         container.remove()
         return jsonify({"message": f"Container {container_id} removed successfully."}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
+
+@container_bp.route('/api/containers/create', methods=['POST'])
+@jwt_required()
+def create_container():
+    client = docker.from_env()
+    data = request.get_json()
+    
+    try:
+        image_name = data.get('image', 'alpine:latest')
+        container_name = data.get('name')
+        ports = data.get('ports', {})
+        environment = data.get('environment', {})
+        
+        try:
+            client.images.pull(image_name)
+        except docker.errors.ImageNotFound:
+            return jsonify({"message": f"Image {image_name} not found"}), 404
+        except docker.errors.APIError as e:
+            return jsonify({"message": f"Error pulling image: {str(e)}"}), 400
+        
+        container = client.containers.create(
+            image=image_name,
+            name=container_name,
+            ports=ports,
+            environment=environment,
+            detach=True
+        )
+        
+        return jsonify({
+            "message": "Container created successfully",
+            "container_id": container.id
+        }), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 

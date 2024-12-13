@@ -13,7 +13,7 @@ Container Management
 - [ ] Create a container (Broken)
 - [x] Remove a container
 - [x] Start a container
-- [x] >Stop a container
+- [x] Stop a container
 - [x] Restart a container
 - [ ] Pause a container
 - [ ] Unpause a container

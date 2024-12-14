@@ -20,7 +20,13 @@ def create_app():
 
     db.init_app(app)
     jwt = JWTManager(app)
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": ["http://localhost:3000"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"]
+        }
+    })
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(server_bp)

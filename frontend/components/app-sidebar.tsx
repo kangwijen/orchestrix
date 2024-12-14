@@ -39,12 +39,12 @@ const dockerItems = {
     icon: Container,
     subItems: [
         {
-            title: "Manage",
+            title: "Manage Containers",
             url: "/container/docker/manage",
             icon: Settings,
         },
         {
-            title: "Create",
+            title: "Create Container",
             url: "/container/docker/create",
             icon: Plus,
         },

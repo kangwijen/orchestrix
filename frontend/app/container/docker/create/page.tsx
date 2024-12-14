@@ -32,8 +32,11 @@ const DockerCreatePage = () => {
         };
     };
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleCreate = async () => {
         try {
+            setIsLoading(true);
             const portsMap = formData.ports
                 ? Object.fromEntries(
                       formData.ports.split(",").map((p) => {
@@ -56,7 +59,7 @@ const DockerCreatePage = () => {
                     headers: getHeaders(),
                     body: JSON.stringify({
                         name: formData.name,
-                        image: formData.image || "alpine:latest",
+                        image: formData.image || "nginx:latest",
                         ports: portsMap,
                         environment: envMap,
                     }),
@@ -76,6 +79,8 @@ const DockerCreatePage = () => {
                 description: err.message || "Failed to create container",
                 className: "bg-red-900 text-white border-none",
             });
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -97,6 +102,7 @@ const DockerCreatePage = () => {
                             value={formData.name}
                             onChange={handleInputChange}
                             placeholder="e.g.: mysql-db, nginx-server"
+                            disabled={isLoading}
                         />
                     </div>
                     <div className="space-y-2">
@@ -106,6 +112,7 @@ const DockerCreatePage = () => {
                             value={formData.image}
                             onChange={handleInputChange}
                             placeholder="e.g.: alpine:latest, nginx:latest"
+                            disabled={isLoading}
                         />
                     </div>
                     <div className="space-y-2">
@@ -117,6 +124,7 @@ const DockerCreatePage = () => {
                             value={formData.ports}
                             onChange={handleInputChange}
                             placeholder="e.g.: 3306:3306, 80:80"
+                            disabled={isLoading}
                         />
                     </div>
                     <div className="space-y-2">
@@ -128,10 +136,11 @@ const DockerCreatePage = () => {
                             value={formData.environment}
                             onChange={handleInputChange}
                             placeholder="e.g.: MYSQL_ROOT_PASSWORD=pass, MYSQL_DATABASE=app"
+                            disabled={isLoading}
                         />
                     </div>
-                    <Button onClick={handleCreate} className="w-full">
-                        Create Container
+                    <Button onClick={handleCreate} className="w-full" disabled={isLoading}>
+                        {isLoading ? "Creating..." : "Create Container"}
                     </Button>
                 </CardContent>
             </Card>

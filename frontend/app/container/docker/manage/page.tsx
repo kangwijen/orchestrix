@@ -33,6 +33,14 @@ import {
 
 import { RotateCw } from "lucide-react";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
+
 interface PortBinding {
     HostIp: string;
     HostPort: string;
@@ -50,6 +58,9 @@ interface Container {
 const DockerManagementPage = () => {
     const [containers, setContainers] = useState<Container[]>([]);
     const [removePassword, setRemovePassword] = useState("");
+    const [logs, setLogs] = useState("");
+    const [logsOpen, setLogsOpen] = useState(false);
+    const [selectedContainer, setSelectedContainer] = useState("");
     const { toast } = useToast();
 
     const getHeaders = () => {
@@ -191,6 +202,30 @@ const DockerManagementPage = () => {
                 description: `Failed to remove container: ${error.message}`,
                 className: "bg-red-900 text-white border-none",
             });
+        }
+    };
+
+    const handleViewLogs = async (containerId: string) => {
+        try {
+            setSelectedContainer(containerId);
+            setLogsOpen(true);
+            const response = await fetch(
+                `http://localhost:5000/api/containers/logs/${containerId}`,
+                {
+                    headers: getHeaders(),
+                },
+            );
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message);
+            setLogs(data.logs);
+        } catch (error: any) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: `Failed to fetch logs: ${error.message}`,
+                className: "bg-red-900 text-white border-none",
+            });
+            setLogsOpen(false);
         }
     };
 
@@ -481,6 +516,18 @@ const DockerManagementPage = () => {
                                                                               )
                                                                         : "None"}
                                                                 </div>
+                                                                <div>
+                                                                    <Button 
+                                                                        className="bg-blue-600 hover:bg-blue-700"
+                                                                        onClick={() =>
+                                                                            handleViewLogs(
+                                                                                container.id,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        View Logs
+                                                                    </Button>
+                                                                </div>
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
@@ -503,6 +550,24 @@ const DockerManagementPage = () => {
                     </div>
                 </CardContent>
             </Card>
+
+            <Dialog open={logsOpen} onOpenChange={setLogsOpen}>
+                <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>
+                            Container Logs
+                        </DialogTitle>
+                        <DialogDescription>
+                            Viewing logs for container: {selectedContainer}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex-1 overflow-auto">
+                        <pre className="font-mono text-sm whitespace-pre-wrap bg-slate-950 p-4 rounded-md">
+                            {logs || "No logs available"}
+                        </pre>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

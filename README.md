@@ -10,7 +10,8 @@ Simplify workflows, monitor deployments, and manage your infrastructure seamless
 
 Container Management
 - [x] List all containers
-- [x] Create a container
+- [x] Create a container from an image
+- [ ] Create a container from custom Dockerfile
 - [x] Remove a container
 - [x] Start a container
 - [x] Stop a container
@@ -18,7 +19,7 @@ Container Management
 - [ ] Pause a container
 - [ ] Unpause a container
 - [ ] Inspect a container
-- [ ] Get logs of a container
+- [x] Get logs of a container
 - [ ] Get stats of a container
 
 Network Management

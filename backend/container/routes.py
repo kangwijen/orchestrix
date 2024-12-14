@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash
+from flask_cors import cross_origin
 
 import docker
 from models import User
@@ -92,6 +93,17 @@ def remove_container(container_id):
         return jsonify({"message": f"Container {container_id} removed successfully."}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
+    
+@container_bp.route('/api/containers/logs/<string:container_id>', methods=['GET'])
+@jwt_required()
+def get_container_logs(container_id):
+    client = docker.from_env()
+    try:
+        container = client.containers.get(container_id)
+        logs = container.logs().decode('utf-8')
+        return jsonify({"logs": logs}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
 
 @container_bp.route('/api/containers/create', methods=['POST'])
 @jwt_required()
@@ -100,7 +112,7 @@ def create_container():
     data = request.get_json()
     
     try:
-        image_name = data.get('image', 'alpine:latest')
+        image_name = data.get('image', 'nginx:latest')
         container_name = data.get('name')
         ports = data.get('ports', {})
         environment = data.get('environment', {})

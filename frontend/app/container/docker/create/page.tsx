@@ -17,7 +17,7 @@ const DockerCreatePage = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const getHeaders = () => {
@@ -34,29 +34,34 @@ const DockerCreatePage = () => {
 
     const handleCreate = async () => {
         try {
-            const portsMap = formData.ports ? 
-                Object.fromEntries(
-                    formData.ports.split(',').map(p => {
-                        const [host, container] = p.split(':');
-                        return [container, host];
-                    })
-                ) : {};
+            const portsMap = formData.ports
+                ? Object.fromEntries(
+                      formData.ports.split(",").map((p) => {
+                          const [host, container] = p.split(":");
+                          return [container, host];
+                      }),
+                  )
+                : {};
 
-            const envMap = formData.environment ?
-                Object.fromEntries(
-                    formData.environment.split(',').map(e => e.split('='))
-                ) : {};
+            const envMap = formData.environment
+                ? Object.fromEntries(
+                      formData.environment.split(",").map((e) => e.split("=")),
+                  )
+                : {};
 
-            const response = await fetch("http://localhost:5000/api/containers/create", {
-                method: "POST",
-                headers: getHeaders(),
-                body: JSON.stringify({
-                    name: formData.name,
-                    image: formData.image || "alpine:latest",
-                    ports: portsMap,
-                    environment: envMap,
-                }),
-            });
+            const response = await fetch(
+                "http://localhost:5000/api/containers/create",
+                {
+                    method: "POST",
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        name: formData.name,
+                        image: formData.image || "alpine:latest",
+                        ports: portsMap,
+                        environment: envMap,
+                    }),
+                },
+            );
             const data = await response.json();
             if (!response.ok) throw new Error(data.message);
             toast({
@@ -84,7 +89,9 @@ const DockerCreatePage = () => {
             <Card>
                 <CardContent className="p-6 space-y-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Container Name</label>
+                        <label className="text-sm font-medium">
+                            Container Name
+                        </label>
                         <Input
                             name="name"
                             value={formData.name}
@@ -102,7 +109,9 @@ const DockerCreatePage = () => {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Ports (host:container, comma-separated)</label>
+                        <label className="text-sm font-medium">
+                            Ports (host:container, comma-separated)
+                        </label>
                         <Input
                             name="ports"
                             value={formData.ports}
@@ -111,7 +120,9 @@ const DockerCreatePage = () => {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium">Environment Variables (KEY=value, comma-separated)</label>
+                        <label className="text-sm font-medium">
+                            Environment Variables (KEY=value, comma-separated)
+                        </label>
                         <Input
                             name="environment"
                             value={formData.environment}

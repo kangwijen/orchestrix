@@ -10,7 +10,7 @@ Simplify workflows, monitor deployments, and manage your infrastructure seamless
 
 Container Management
 - [x] List all containers
-- [ ] Create a container (Broken)
+- [x] Create a container
 - [x] Remove a container
 - [x] Start a container
 - [x] Stop a container

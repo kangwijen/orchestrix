@@ -1,5 +1,16 @@
-import { Home, Container, LogOut, Plus, Settings, ChevronDown } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import {
+    Home,
+    Container,
+    LogOut,
+    Plus,
+    Settings,
+    ChevronDown,
+} from "lucide-react";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "@radix-ui/react-collapsible";
 import {
     Sidebar,
     SidebarContent,
@@ -12,6 +23,9 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
+import { usePathname } from "next/navigation";
+
 const navigationItems = [
     {
         title: "Home",
@@ -50,6 +64,10 @@ export function AppSidebar() {
         window.location.href = "/login";
     };
 
+    const pathname = usePathname();
+
+    if (pathname === "/login") return null;
+
     return (
         <Sidebar>
             <SidebarHeader />
@@ -87,8 +105,8 @@ export function AppSidebar() {
                             <Collapsible>
                                 <SidebarMenuItem>
                                     <CollapsibleTrigger asChild>
-                                        <SidebarMenuButton className="flex items-center gap-2 p-2 sm:p-3 group" >
-                                            <dockerItems.icon/>
+                                        <SidebarMenuButton className="flex items-center gap-2 p-2 sm:p-3 group">
+                                            <dockerItems.icon />
                                             <span className="text-sm sm:text-base">
                                                 {dockerItems.title}
                                             </span>
@@ -97,21 +115,27 @@ export function AppSidebar() {
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>
                                         <SidebarMenu className="ml-2">
-                                            {dockerItems.subItems.map((item) => (
-                                                <SidebarMenuItem key={item.title}>
-                                                    <SidebarMenuButton asChild>
-                                                        <a
-                                                            href={item.url}
-                                                            className="flex items-center gap-2 p-2 sm:p-3"
+                                            {dockerItems.subItems.map(
+                                                (item) => (
+                                                    <SidebarMenuItem
+                                                        key={item.title}
+                                                    >
+                                                        <SidebarMenuButton
+                                                            asChild
                                                         >
-                                                            <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                                                            <span className="text-sm sm:text-base">
-                                                                {item.title}
-                                                            </span>
-                                                        </a>
-                                                    </SidebarMenuButton>
-                                                </SidebarMenuItem>
-                                            ))}
+                                                            <a
+                                                                href={item.url}
+                                                                className="flex items-center gap-2 p-2 sm:p-3"
+                                                            >
+                                                                <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                                                                <span className="text-sm sm:text-base">
+                                                                    {item.title}
+                                                                </span>
+                                                            </a>
+                                                        </SidebarMenuButton>
+                                                    </SidebarMenuItem>
+                                                ),
+                                            )}
                                         </SidebarMenu>
                                     </CollapsibleContent>
                                 </SidebarMenuItem>

@@ -7,7 +7,7 @@ export function isAuthenticated() {
         return Promise.resolve(false);
     }
 
-    return fetch("http://localhost:5000/api/user", {
+    return fetch(`${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${token}`,

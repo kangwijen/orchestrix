@@ -5,6 +5,33 @@ Orchestrix is a modern DevOps management platform to streamline the management o
 
 Simplify workflows, monitor deployments, and manage your infrastructure seamlessly, all in one place.
 
+## Project Structure
+- `/frontend` - React-based web application
+- `/backend` - Python backend server
+
+## Quick Start
+
+### Frontend Setup
+See [Frontend Documentation](./frontend/README.md) for detailed instructions.
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend Setup
+See [Backend Documentation](./backend/README.md) for detailed instructions.
+```bash
+cd backend
+pip install -r requirements.txt
+python app.py
+```
+
+## Running Orchestrix
+1. Start the backend server first
+2. Start the frontend development server
+3. Access the application at `http://localhost:3000`
+
 ## Features
 ### Docker
 
@@ -42,3 +69,4 @@ System Management
 - [ ] Prune unused objects
 - [ ] Monitor events & stats
 - [ ] Configure Docker settings
+

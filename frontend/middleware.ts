@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isAuthenticated } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
     const token = request.cookies.get("accessToken")?.value;
@@ -9,7 +8,7 @@ export async function middleware(request: NextRequest) {
 
     if (isLoginPage || isRootPage) {
         if (token) {
-            const response = await fetch("http://localhost:5000/api/user", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -29,7 +28,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/login", request.nextUrl));
     }
 
-    const response = await fetch("http://localhost:5000/api/user", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${token}`,

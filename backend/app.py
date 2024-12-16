@@ -1,5 +1,7 @@
 import random
 import os
+from dotenv import load_dotenv
+from pathlib import Path
 
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, create_access_token
@@ -14,15 +16,21 @@ from container.routes import container_bp
 from server.routes import server_bp
 from infrastructure.routes import infrastructure_bp
 
+from waitress import serve
+
+dotenv_path = Path(__file__).parent.parent / '.env'
+load_dotenv(dotenv_path)
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
     db.init_app(app)
     jwt = JWTManager(app)
+
     CORS(app, resources={
         r"/api/*": {
-            "origins": ["http://localhost:3000"],
+            "origins": [f"http://{os.getenv('NEXTJS_HOST')}:{os.getenv('NEXTJS_PORT')}"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"]
         }
@@ -53,4 +61,10 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run()
+
+    if os.getenv('FLASK_ENV') == 'development':
+        app.run(debug=True, host=os.getenv('FLASK_HOST'), port=int(os.getenv('FLASK_PORT')))
+    elif os.getenv('FLASK_ENV') == 'production':
+        serve(app, host=os.getenv('FLASK_HOST'), port=int(os.getenv('FLASK_PORT')))
+    else:
+        print(f'Invalid .env configuration')

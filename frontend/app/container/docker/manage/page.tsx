@@ -78,7 +78,7 @@ const DockerManagementPage = () => {
     const fetchContainers = async () => {
         try {
             const response = await fetch(
-                "http://localhost:5000/api/containers/list",
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/containers/list`,
                 {
                     headers: getHeaders(),
                 },
@@ -98,7 +98,7 @@ const DockerManagementPage = () => {
     const handleStart = async (containerId: string) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/api/containers/start/${containerId}`,
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/containers/start/${containerId}`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -125,7 +125,7 @@ const DockerManagementPage = () => {
     const handleStop = async (containerId: string) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/api/containers/stop/${containerId}`,
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/containers/stop/${containerId}`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -152,7 +152,7 @@ const DockerManagementPage = () => {
     const handleRestart = async (containerId: string) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/api/containers/restart/${containerId}`,
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/containers/restart/${containerId}`,
                 {
                     method: "POST",
                     headers: getHeaders(),
@@ -179,7 +179,7 @@ const DockerManagementPage = () => {
     const handleRemove = async (containerId: string) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/api/containers/remove/${containerId}`,
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/containers/remove/${containerId}`,
                 {
                     method: "DELETE",
                     headers: getHeaders(),
@@ -210,7 +210,7 @@ const DockerManagementPage = () => {
             setSelectedContainer(containerId);
             setLogsOpen(true);
             const response = await fetch(
-                `http://localhost:5000/api/containers/logs/${containerId}`,
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/containers/logs/${containerId}`,
                 {
                     headers: getHeaders(),
                 },

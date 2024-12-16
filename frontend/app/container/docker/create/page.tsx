@@ -53,7 +53,7 @@ const DockerCreatePage = () => {
                 : {};
 
             const response = await fetch(
-                "http://localhost:5000/api/containers/create",
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/containers/create`,
                 {
                     method: "POST",
                     headers: getHeaders(),

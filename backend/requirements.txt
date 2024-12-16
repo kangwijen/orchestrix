@@ -2,4 +2,6 @@ Flask
 flask_jwt_extended
 flask_sqlalchemy
 flask_cors
+waitress
 docker
+python-dotenv

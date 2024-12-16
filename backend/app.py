@@ -12,7 +12,8 @@ from models import User, Tools
 from config import Config
 
 from auth.routes import auth_bp
-from container.routes import container_bp
+from container.container.routes import container_bp
+from container.volume.routes import network_bp
 from server.routes import server_bp
 from infrastructure.routes import infrastructure_bp
 
@@ -40,6 +41,7 @@ def create_app():
     app.register_blueprint(server_bp)
     app.register_blueprint(container_bp)
     app.register_blueprint(infrastructure_bp)
+    app.register_blueprint(network_bp)
 
     with app.app_context():
         db.create_all()

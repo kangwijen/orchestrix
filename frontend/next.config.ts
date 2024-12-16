@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 
-dotenv.config({path: '../.env'})
+dotenv.config({ path: "../.env" });
 
-const nextConfig: NextConfig = {
-    
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

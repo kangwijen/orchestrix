@@ -47,7 +47,7 @@ Container Management
 - [ ] Unpause a container
 - [ ] Inspect a container
 - [x] Get logs of a container
-- [ ] Get stats of a container
+- [x] Get stats of a container
 
 Network Management
 - [ ] List networks

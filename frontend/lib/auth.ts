@@ -7,12 +7,15 @@ export function isAuthenticated() {
         return Promise.resolve(false);
     }
 
-    return fetch(`${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${token}`,
+    return fetch(
+        `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         },
-    })
+    )
         .then((response) => {
             if (response.ok) {
                 return response.json();

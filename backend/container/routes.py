@@ -104,6 +104,17 @@ def get_container_logs(container_id):
         return jsonify({"logs": logs}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
+    
+@container_bp.route('/api/containers/stats/<string:container_id>', methods=['GET'])
+@jwt_required()
+def get_container_stats(container_id):
+    client = docker.from_env()
+    try:
+        container = client.containers.get(container_id)
+        stats = container.stats(stream=True)
+        return (stats), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
 
 @container_bp.route('/api/containers/create', methods=['POST'])
 @jwt_required()

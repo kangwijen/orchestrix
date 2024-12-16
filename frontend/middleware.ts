@@ -8,12 +8,15 @@ export async function middleware(request: NextRequest) {
 
     if (isLoginPage || isRootPage) {
         if (token) {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 },
-            });
+            );
 
             if (response.ok) {
                 return NextResponse.redirect(
@@ -28,12 +31,15 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/login", request.nextUrl));
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${token}`,
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/user`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         },
-    });
+    );
 
     if (!response.ok) {
         return NextResponse.redirect(new URL("/login", request.nextUrl));

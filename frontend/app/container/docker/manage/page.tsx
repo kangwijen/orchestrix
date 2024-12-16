@@ -41,6 +41,8 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 
+import { Gauge } from "@/components/gauge";
+
 interface PortBinding {
     HostIp: string;
     HostPort: string;
@@ -55,12 +57,26 @@ interface Container {
     ports: { [key: string]: PortBinding[] | null };
 }
 
+interface ContainerStats {
+    timestamp: string;
+    cpuUsage: number;
+    memoryUsage: string;
+    memoryLimit: string;
+    memoryPercent: number;
+    networkRx: string;
+    networkTx: string;
+}
+
 const DockerManagementPage = () => {
     const [containers, setContainers] = useState<Container[]>([]);
     const [removePassword, setRemovePassword] = useState("");
     const [logs, setLogs] = useState("");
     const [logsOpen, setLogsOpen] = useState(false);
+    const [stats, setStats] = useState<ContainerStats | null>(null);
+    const [statsOpen, setStatsOpen] = useState(false);
     const [selectedContainer, setSelectedContainer] = useState("");
+    const [statsController, setStatsController] =
+        useState<AbortController | null>(null);
     const { toast } = useToast();
 
     const getHeaders = () => {
@@ -228,6 +244,123 @@ const DockerManagementPage = () => {
             setLogsOpen(false);
         }
     };
+
+    const formatBytes = (bytes: number): string => {
+        if (bytes === 0) return "0 B";
+        const k = 1024;
+        const sizes = ["B", "KB", "MB", "GB", "TB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+    };
+
+    const calculateCpuPercentage = (stats: any): number => {
+        const cpuDelta =
+            stats.cpu_stats.cpu_usage.total_usage -
+            stats.precpu_stats.cpu_usage.total_usage;
+        const systemDelta =
+            stats.cpu_stats.system_cpu_usage -
+            stats.precpu_stats.system_cpu_usage;
+        const cpuPercent =
+            (cpuDelta / systemDelta) * stats.cpu_stats.online_cpus * 100;
+        return Math.round(cpuPercent * 100) / 100;
+    };
+
+    const formatTimestamp = (timestamp: string): string => {
+        const date = new Date(timestamp);
+        return date.toLocaleString("en-US", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+        });
+    };
+
+    const processStats = (statsData: any) => {
+        const timestamp = formatTimestamp(statsData.read);
+        const cpuUsage = calculateCpuPercentage(statsData);
+        const memoryUsage = formatBytes(statsData.memory_stats.usage);
+        const memoryLimit = formatBytes(statsData.memory_stats.limit);
+        const memoryPercent = parseFloat(
+            (
+                (statsData.memory_stats.usage / statsData.memory_stats.limit) *
+                100
+            ).toFixed(2),
+        );
+        const networkRx = formatBytes(statsData.networks?.eth0?.rx_bytes || 0);
+        const networkTx = formatBytes(statsData.networks?.eth0?.tx_bytes || 0);
+
+        setStats({
+            timestamp,
+            cpuUsage,
+            memoryUsage,
+            memoryLimit,
+            memoryPercent,
+            networkRx,
+            networkTx,
+        });
+    };
+
+    const handleViewStats = async (containerId: string) => {
+        if (statsController) {
+            statsController.abort();
+        }
+        const newController = new AbortController();
+        setStatsController(newController);
+        setSelectedContainer(containerId);
+        setStatsOpen(true);
+        setStats(null);
+
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_FLASK_PROTOCOL}://${process.env.NEXT_PUBLIC_FLASK_HOST}:${process.env.NEXT_PUBLIC_FLASK_PORT}/api/containers/stats/${containerId}`,
+                {
+                    headers: getHeaders(),
+                    signal: newController.signal,
+                },
+            );
+
+            const reader = response.body?.getReader();
+            if (!reader) throw new Error("No reader available");
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                const text = new TextDecoder().decode(value);
+                const lines = text.split("\n").filter((line) => line.trim());
+
+                for (const line of lines) {
+                    try {
+                        const statsData = JSON.parse(line);
+                        processStats(statsData);
+                    } catch (e) {
+                        console.error("Error parsing stats:", e);
+                    }
+                }
+            }
+        } catch (error: any) {
+            if (error.name !== "AbortError") {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Failed to fetch stats: ${error.message}`,
+                    className: "bg-red-900 text-white border-none",
+                });
+                setStatsOpen(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            if (statsController) {
+                statsController.abort();
+            }
+        };
+    }, [statsController]);
 
     useEffect(() => {
         fetchContainers();
@@ -516,8 +649,8 @@ const DockerManagementPage = () => {
                                                                               )
                                                                         : "None"}
                                                                 </div>
-                                                                <div>
-                                                                    <Button 
+                                                                <div className="space-x-2">
+                                                                    <Button
                                                                         className="bg-blue-600 hover:bg-blue-700"
                                                                         onClick={() =>
                                                                             handleViewLogs(
@@ -525,7 +658,19 @@ const DockerManagementPage = () => {
                                                                             )
                                                                         }
                                                                     >
-                                                                        View Logs
+                                                                        View
+                                                                        Logs
+                                                                    </Button>
+                                                                    <Button
+                                                                        className="bg-blue-600 hover:bg-blue-700"
+                                                                        onClick={() =>
+                                                                            handleViewStats(
+                                                                                container.id,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        View
+                                                                        Stats
                                                                     </Button>
                                                                 </div>
                                                             </div>
@@ -554,9 +699,7 @@ const DockerManagementPage = () => {
             <Dialog open={logsOpen} onOpenChange={setLogsOpen}>
                 <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
                     <DialogHeader>
-                        <DialogTitle>
-                            Container Logs
-                        </DialogTitle>
+                        <DialogTitle>Container Logs</DialogTitle>
                         <DialogDescription>
                             Viewing logs for container: {selectedContainer}
                         </DialogDescription>
@@ -565,6 +708,78 @@ const DockerManagementPage = () => {
                         <pre className="font-mono text-sm whitespace-pre-wrap bg-slate-950 p-4 rounded-md">
                             {logs || "No logs available"}
                         </pre>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={statsOpen}
+                onOpenChange={(open) => {
+                    if (!open && statsController) {
+                        statsController.abort();
+                    }
+                    setStatsOpen(open);
+                }}
+            >
+                <DialogContent className="max-w-4xl">
+                    <DialogHeader>
+                        <DialogTitle>Container Stats</DialogTitle>
+                        <DialogDescription>
+                            Statistics for container: {selectedContainer}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        {stats ? (
+                            <>
+                                <p className="text-xs">{stats.timestamp}</p>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-slate-900 p-4 rounded-lg">
+                                        <h3 className="text-lg font-semibold mb-2">
+                                            CPU Usage
+                                        </h3>
+                                        <Gauge
+                                            value={stats.cpuUsage}
+                                            size="medium"
+                                            showValue={true}
+                                        />
+                                    </div>
+                                    <div className="bg-slate-900 p-4 rounded-lg">
+                                        <h3 className="text-lg font-semibold mb-2">
+                                            Memory Usage
+                                        </h3>
+                                        <Gauge
+                                            value={stats.memoryPercent}
+                                            size="medium"
+                                            showValue={true}
+                                        />
+                                        <p className="text-xl mt-4 text-center">
+                                            {stats.memoryUsage} /{" "}
+                                            {stats.memoryLimit}
+                                        </p>
+                                    </div>
+                                    <div className="bg-slate-900 p-4 rounded-lg">
+                                        <h3 className="text-lg font-semibold mb-2">
+                                            Network RX
+                                        </h3>
+                                        <p className="text-xl text-center">
+                                            {stats.networkRx}
+                                        </p>
+                                    </div>
+                                    <div className="bg-slate-900 p-4 rounded-lg">
+                                        <h3 className="text-lg font-semibold mb-2">
+                                            Network TX
+                                        </h3>
+                                        <p className="text-xl text-center">
+                                            {stats.networkTx}
+                                        </p>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="text-center py-4">
+                                <p>Loading stats...</p>
+                            </div>
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>

@@ -9,27 +9,24 @@ from datetime import datetime
 import pytz
 from dateutil.parser import isoparse
 
-network_bp = Blueprint('network', __name__)
+volume_bp = Blueprint('volume', __name__)
 
-@network_bp.route('/api/networks/list', methods=['GET'])
+@volume_bp.route('/api/volumes/list', methods=['GET'])
 @jwt_required()
-def list_networks():
+def list_volumes():
     client = docker.from_env()
-    networks = client.networks.list()
-    network_list = []
+    volumes = client.volumes.list()
 
     networks_list = []
-    for network in networks:
-        network_info = {
-            'id': network.short_id,
-            'name': network.name,
-            'driver': network.attrs['Driver'],
-            'scope': network.attrs['Scope'],
-            'created': isoparse(network.attrs['Created']) \
+    for volume in volumes:
+        volume_info = {
+            'id': volume.short_id,
+            'name': volume.name,
+            'driver': volume.attrs['Driver'],
+            'created': isoparse(volume.attrs['CreatedAt']) \
             .astimezone(pytz.UTC) \
             .strftime('%H:%M:%S %d-%m-%Y'),
-            'containers': len(network.containers)
         }
-        networks_list.append(network_info)
+        networks_list.append(volume_info)
 
     return jsonify(networks_list), 200

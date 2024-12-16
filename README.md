@@ -28,9 +28,10 @@ python app.py
 ```
 
 ## Running Orchestrix
-1. Start the backend server first
-2. Start the frontend development server
-3. Access the application at `http://localhost:3000`
+1. Setup .env in the parent directory, use .env.example as an example
+2. Start the backend server first
+3. Start the frontend development server
+4. Access the application at `http://localhost:3000`
 
 ## Features
 ### Docker

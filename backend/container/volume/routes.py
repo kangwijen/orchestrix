@@ -17,7 +17,7 @@ def list_volumes():
     client = docker.from_env()
     volumes = client.volumes.list()
 
-    networks_list = []
+    volumes_list = []
     for volume in volumes:
         volume_info = {
             'id': volume.short_id,
@@ -27,6 +27,6 @@ def list_volumes():
             .astimezone(pytz.UTC) \
             .strftime('%H:%M:%S %d-%m-%Y'),
         }
-        networks_list.append(volume_info)
+        volumes_list.append(volume_info)
 
-    return jsonify(networks_list), 200
+    return jsonify(volumes_list), 200

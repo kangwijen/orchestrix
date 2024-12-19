@@ -67,7 +67,7 @@ interface ContainerStats {
     networkTx: string;
 }
 
-const DockerManagementPage = () => {
+const DockerContainerManagePage = () => {
     const [containers, setContainers] = useState<Container[]>([]);
     const [removePassword, setRemovePassword] = useState("");
     const [logs, setLogs] = useState("");
@@ -729,55 +729,61 @@ const DockerManagementPage = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
-                        {stats ? (
-                            <>
-                                <p className="text-xs">{stats.timestamp}</p>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-slate-900 p-4 rounded-lg">
-                                        <h3 className="text-lg font-semibold mb-2">
-                                            CPU Usage
-                                        </h3>
-                                        <Gauge
-                                            value={stats.cpuUsage}
-                                            size="medium"
-                                            showValue={true}
-                                        />
+                        {containers[0]?.status === "running" ? (
+                            stats ? (
+                                <>
+                                    <p className="text-xs">{stats?.timestamp}</p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-slate-900 p-4 rounded-lg">
+                                            <h3 className="text-lg font-semibold mb-2">
+                                                CPU Usage
+                                            </h3>
+                                            <Gauge
+                                                value={stats?.cpuUsage || 0}
+                                                size="medium"
+                                                showValue={true}
+                                            />
+                                        </div>
+                                        <div className="bg-slate-900 p-4 rounded-lg">
+                                            <h3 className="text-lg font-semibold mb-2">
+                                                Memory Usage
+                                            </h3>
+                                            <Gauge
+                                                value={stats?.memoryPercent || 0}
+                                                size="medium"
+                                                showValue={true}
+                                            />
+                                            <p className="text-xl mt-4 text-center">
+                                                {stats?.memoryUsage} /{" "}
+                                                {stats?.memoryLimit}
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-900 p-4 rounded-lg">
+                                            <h3 className="text-lg font-semibold mb-2">
+                                                Network RX
+                                            </h3>
+                                            <p className="text-xl text-center">
+                                                {stats?.networkRx}
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-900 p-4 rounded-lg">
+                                            <h3 className="text-lg font-semibold mb-2">
+                                                Network TX
+                                            </h3>
+                                            <p className="text-xl text-center">
+                                                {stats?.networkTx}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="bg-slate-900 p-4 rounded-lg">
-                                        <h3 className="text-lg font-semibold mb-2">
-                                            Memory Usage
-                                        </h3>
-                                        <Gauge
-                                            value={stats.memoryPercent}
-                                            size="medium"
-                                            showValue={true}
-                                        />
-                                        <p className="text-xl mt-4 text-center">
-                                            {stats.memoryUsage} /{" "}
-                                            {stats.memoryLimit}
-                                        </p>
-                                    </div>
-                                    <div className="bg-slate-900 p-4 rounded-lg">
-                                        <h3 className="text-lg font-semibold mb-2">
-                                            Network RX
-                                        </h3>
-                                        <p className="text-xl text-center">
-                                            {stats.networkRx}
-                                        </p>
-                                    </div>
-                                    <div className="bg-slate-900 p-4 rounded-lg">
-                                        <h3 className="text-lg font-semibold mb-2">
-                                            Network TX
-                                        </h3>
-                                        <p className="text-xl text-center">
-                                            {stats.networkTx}
-                                        </p>
-                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-center py-4">
+                                    <p>Loading stats...</p>
                                 </div>
-                            </>
+                            )
                         ) : (
                             <div className="text-center py-4">
-                                <p>Loading stats...</p>
+                                <p>Container is not running</p>
                             </div>
                         )}
                     </div>
@@ -787,4 +793,4 @@ const DockerManagementPage = () => {
     );
 };
 
-export default DockerManagementPage;
+export default DockerContainerManagePage;

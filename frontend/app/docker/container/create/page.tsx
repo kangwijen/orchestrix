@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 
-const DockerCreatePage = () => {
+const DockerContainerCreatePage = () => {
     const { toast } = useToast();
     const [formData, setFormData] = useState({
         name: "",
@@ -152,4 +152,4 @@ const DockerCreatePage = () => {
     );
 };
 
-export default DockerCreatePage;
+export default DockerContainerCreatePage;

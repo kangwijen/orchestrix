@@ -6,7 +6,7 @@ import {
     Settings,
     ChevronDown,
     Network,
-    Database
+    Database,
 } from "lucide-react";
 import {
     Collapsible,
@@ -42,24 +42,24 @@ const dockerItems = {
     subItems: [
         {
             title: "Manage Containers",
-            url: "/container/docker/manage",
+            url: "/docker/container/manage",
             icon: Settings,
         },
         {
             title: "Create Container",
-            url: "/container/docker/create",
+            url: "/docker/container/create",
             icon: Plus,
         },
         {
             title: "Manage Networks",
-            url: "/container/docker/network",
+            url: "/docker/network/manage",
             icon: Network,
         },
         {
             title: "Manage Volumes",
-            url: "/container/docker/volume",
+            url: "/docker/volume/manage",
             icon: Database,
-        }
+        },
     ],
 };
 

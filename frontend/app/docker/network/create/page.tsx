@@ -43,9 +43,6 @@ import {
 
 import { Gauge } from "@/components/gauge";
 
+const DockerNetworkCreatePage = () => {};
 
-const DockerNetworkPage = () => {
-    
-};
-
-export default DockerNetworkPage;
+export default DockerNetworkCreatePage;

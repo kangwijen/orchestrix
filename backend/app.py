@@ -2,6 +2,7 @@ import random
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+import warnings
 
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, create_access_token
@@ -71,4 +72,5 @@ if __name__ == '__main__':
     elif os.getenv('FLASK_ENV') == 'production':
         serve(app, host=os.getenv('FLASK_HOST'), port=int(os.getenv('FLASK_PORT')))
     else:
+        warnings.warn("FLASK_ENV must be set in environment variables", UserWarning)
         print(f'Invalid .env configuration')

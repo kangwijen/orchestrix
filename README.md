@@ -12,7 +12,7 @@ Simplify workflows, monitor deployments, and manage your infrastructure seamless
 ## Quick Start
 
 ### Frontend Setup
-See [Frontend Documentation](./frontend/README.md) for detailed instructions.
+See [Frontend Documentation](./frontend-new/README.md) for detailed instructions.
 ```bash
 cd frontend
 npm install
@@ -40,6 +40,7 @@ Container Management
 - [x] List all containers
 - [x] Create a container from an image
 - [ ] Create a container from custom Dockerfile
+- [ ] Create a container from custom Compose file
 - [x] Remove a container
 - [x] Start a container
 - [x] Stop a container

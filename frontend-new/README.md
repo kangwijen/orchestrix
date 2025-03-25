@@ -1,5 +1,4 @@
-# Orchestrix Frontend 
-# DEPRECATED, PLEASE USE frontend-new INSTEAD
+# Orchestrix Frontend
 
 ## Overview
 

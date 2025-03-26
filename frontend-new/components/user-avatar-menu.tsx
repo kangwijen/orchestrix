@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { LogOut, User, Settings, Bell } from 'lucide-react';
+import { LogOut, User, Settings } from 'lucide-react';
 import { authApi } from '@/lib/api';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,7 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useSidebar } from '@/components/ui/sidebar';

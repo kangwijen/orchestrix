@@ -1,4 +1,12 @@
-import { LucideIcon, LayoutDashboard, Package, Plus, Network, Database, HardDrive } from 'lucide-react';
+import {
+  LucideIcon,
+  LayoutDashboard,
+  Package,
+  Plus,
+  Network,
+  Database,
+  HardDrive,
+} from 'lucide-react';
 
 export interface NavItem {
   title: string;
@@ -25,14 +33,14 @@ export interface NavigationStructure {
 
 export const navigationLinks: NavigationStructure = {
   mainNavigation: {
-    title: "Navigation",
+    title: 'Navigation',
     items: [
       {
         title: 'Dashboard',
         url: '/dashboard',
         icon: LayoutDashboard,
       },
-    ]
+    ],
   },
   containerManagement: {
     containers: {
@@ -49,11 +57,11 @@ export const navigationLinks: NavigationStructure = {
           title: 'Create',
           url: '/dashboard/containers/new',
           icon: Plus,
-        }
-      ]
+        },
+      ],
     },
     otherItems: {
-      title: "Container Management",
+      title: 'Container Management',
       items: [
         {
           title: 'Networks',
@@ -70,7 +78,7 @@ export const navigationLinks: NavigationStructure = {
           url: '/dashboard/system',
           icon: HardDrive,
         },
-      ]
-    }
-  }
+      ],
+    },
+  },
 };

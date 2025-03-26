@@ -10,7 +10,9 @@ interface AppHeaderProps {
 
 export function AppHeader({ isMobile = false }: AppHeaderProps) {
   return (
-    <header className={`bg-background sticky top-0 z-30 flex items-center justify-between border-b px-6 ${isMobile ? 'h-16' : 'h-16'}`}>
+    <header
+      className={`bg-background sticky top-0 z-30 flex items-center justify-between border-b px-6 ${isMobile ? 'h-16' : 'h-16'}`}
+    >
       <div className="flex items-center gap-2">
         <SidebarTrigger />
         {isMobile && <span className="text-xl font-bold">Orchestrix</span>}

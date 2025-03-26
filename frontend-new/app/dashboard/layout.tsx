@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  SidebarProvider,
-  SidebarRail,
-} from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { AppHeader } from '@/components/header/app-header';
 
@@ -13,7 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <SidebarProvider>
-      <div className="flex min-w-screen min-h-screen flex-col md:flex-row">
+      <div className="flex min-h-screen min-w-screen flex-col md:flex-row">
         {/* Mobile Header */}
         <div className="md:hidden">
           <AppHeader isMobile={true} />

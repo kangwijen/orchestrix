@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
 import {
   Sidebar,
   SidebarContent,
@@ -23,7 +22,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
+  SidebarSeparator,
 } from '@/components/ui/sidebar';
+import { authApi } from '@/lib/api';
 
 const items = [
   {
@@ -63,6 +64,11 @@ export function AppSidebar() {
     }
   };
 
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await authApi.logout();
+  };
+
   return (
     <Sidebar>
       <div className="flex h-14 items-center border-b px-4">
@@ -90,19 +96,19 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarSeparator />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <div className="mt-auto border-t p-4">
-        <Link
-          href="/logout"
-          className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm"
-          onClick={handleLinkClick}
+        <button
+          className="text-muted-foreground hover:text-foreground flex w-full items-center gap-2 text-sm"
+          onClick={handleLogout}
         >
           <LogOut size={18} />
           <span>Log out</span>
-        </Link>
+        </button>
       </div>
     </Sidebar>
   );

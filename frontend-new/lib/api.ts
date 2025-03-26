@@ -36,8 +36,15 @@ export const authApi = {
     }
   },
 
-  logout: () => {
-    Cookies.remove('token');
+  logout: async () => {
+    try {
+      await api.post('/api/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      Cookies.remove('token');
+      window.location.href = '/login';
+    }
   },
 };
 

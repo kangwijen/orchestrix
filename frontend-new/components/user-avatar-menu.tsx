@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { LogOut, User, Settings, Bell } from 'lucide-react';
+import { authApi } from '@/lib/api';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -24,6 +25,11 @@ export function UserAvatarMenu() {
     if (isMobile) {
       setOpenMobile(false);
     }
+  };
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await authApi.logout();
   };
 
   return (
@@ -62,11 +68,9 @@ export function UserAvatarMenu() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/logout" onClick={handleMenuItemClick}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-          </Link>
+        <DropdownMenuItem onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

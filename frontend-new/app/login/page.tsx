@@ -67,17 +67,17 @@ export default function Login() {
   }
 
   return (
-    <div className="container flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-center text-xl">Sign in</CardTitle>
+    <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-background via-background/95 to-background/90 p-4 md:p-0">
+      <div className="mx-auto w-full max-w-[420px] shadow-xl">
+        <Card className="border-0 backdrop-blur-sm">
+          <CardHeader className="space-y-3 pb-6">
+            <CardTitle className="text-center text-2xl font-bold">Login</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-4">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
+                className="space-y-5"
               >
                 <FormField
                   control={form.control}
@@ -90,6 +90,7 @@ export default function Login() {
                           placeholder="Enter your username"
                           type="text"
                           autoComplete="username"
+                          className="h-11"
                           disabled={isLoading}
                           {...field}
                         />
@@ -110,6 +111,7 @@ export default function Login() {
                             placeholder="••••••••"
                             type={showPassword ? 'text' : 'password'}
                             autoComplete="current-password"
+                            className="h-11 pr-10"
                             disabled={isLoading}
                             {...field}
                           />
@@ -117,18 +119,18 @@ export default function Login() {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                            className="absolute right-0 top-0 h-full px-3 py-0 hover:bg-transparent"
                             onClick={() => setShowPassword(!showPassword)}
                             disabled={isLoading}
                           >
                             {showPassword ? (
                               <EyeOffIcon
-                                className="text-muted-foreground h-4 w-4"
+                                className="h-4 w-4 text-muted-foreground"
                                 aria-hidden="true"
                               />
                             ) : (
                               <EyeIcon
-                                className="text-muted-foreground h-4 w-4"
+                                className="h-4 w-4 text-muted-foreground"
                                 aria-hidden="true"
                               />
                             )}
@@ -144,7 +146,7 @@ export default function Login() {
                 />
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="h-11 w-full text-base"
                   disabled={isLoading}
                   aria-label="Sign in to your account"
                 >

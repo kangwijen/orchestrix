@@ -48,4 +48,24 @@ export const authApi = {
   },
 };
 
+export const dashboardApi = {
+  getStats: async () => {
+    try {
+      const response = await api.get('/api/dashboard/stats');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getActivities: async () => {
+    try {
+      const response = await api.get('/api/dashboard/activities');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export default api;

@@ -18,6 +18,7 @@ from container.network.routes import network_bp
 from container.volume.routes import volume_bp
 from server.routes import server_bp
 from infrastructure.routes import infrastructure_bp
+from dashboard.routes import dashboard_bp
 
 from waitress import serve
 
@@ -45,6 +46,7 @@ def create_app():
     app.register_blueprint(infrastructure_bp)
     app.register_blueprint(network_bp)
     app.register_blueprint(volume_bp)
+    app.register_blueprint(dashboard_bp)
 
     with app.app_context():
         db.create_all()

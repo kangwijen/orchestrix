@@ -104,7 +104,10 @@ export default function ContainersManagePage() {
     containerId: null as string | null,
   });
 
-  const openDialog = (type: 'stop' | 'restart' | 'remove', containerId: string) => {
+  const openDialog = (
+    type: 'stop' | 'restart' | 'remove',
+    containerId: string,
+  ) => {
     setDialogState({ open: true, type, containerId });
   };
 
@@ -133,7 +136,10 @@ export default function ContainersManagePage() {
       }
       closeDialog();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || `Failed to ${dialogState.type} container`);
+      toast.error(
+        error.response?.data?.message ||
+          `Failed to ${dialogState.type} container`,
+      );
       closeDialog();
     }
   };
@@ -157,7 +163,8 @@ export default function ContainersManagePage() {
       case 'remove':
         return {
           title: 'Remove Container',
-          description: 'This action cannot be undone. Please confirm by entering your password.',
+          description:
+            'This action cannot be undone. Please confirm by entering your password.',
           variant: 'password' as const,
           confirmText: 'Remove',
         };
@@ -361,9 +368,7 @@ export default function ContainersManagePage() {
                 <span>Restart</span>
               </DropdownMenuItem>
 
-              <DropdownMenuItem
-                onClick={() => openLogsDialog(container.id)}
-              >
+              <DropdownMenuItem onClick={() => openLogsDialog(container.id)}>
                 <FileText className="mr-2 h-4 w-4" />
                 <span>View Logs</span>
               </DropdownMenuItem>
@@ -391,7 +396,7 @@ export default function ContainersManagePage() {
   }, []);
 
   return (
-    <div className="flex w-full flex-col gap-4 pb-8 sm:gap-6">
+    <div className="flex w-full flex-col gap-3 pb-6 sm:gap-4">
       <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-2">
         <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
           Containers
@@ -471,7 +476,7 @@ export default function ContainersManagePage() {
 
       <AppLogs
         open={logsDialog.open}
-        onOpenChange={(open) => setLogsDialog(prev => ({ ...prev, open }))}
+        onOpenChange={open => setLogsDialog(prev => ({ ...prev, open }))}
         containerId={logsDialog.containerId}
       />
 

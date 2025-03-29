@@ -1,13 +1,13 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import api from "@/lib/api";
-import { toast } from "sonner";
+} from '@/components/ui/dialog';
+import api from '@/lib/api';
+import { toast } from 'sonner';
 
 interface AppLogsProps {
   open: boolean;
@@ -16,7 +16,7 @@ interface AppLogsProps {
 }
 
 export function AppLogs({ open, onOpenChange, containerId }: AppLogsProps) {
-  const [logs, setLogs] = useState<string>("");
+  const [logs, setLogs] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const logsRef = useRef<HTMLPreElement>(null);
 
@@ -29,7 +29,7 @@ export function AppLogs({ open, onOpenChange, containerId }: AppLogsProps) {
         const response = await api.get(`/api/containers/logs/${containerId}`);
         setLogs(response.data.logs);
       } catch (error: any) {
-        toast.error(error.response?.data?.message || "Failed to fetch logs");
+        toast.error(error.response?.data?.message || 'Failed to fetch logs');
         onOpenChange(false);
       } finally {
         setLoading(false);
@@ -47,7 +47,7 @@ export function AppLogs({ open, onOpenChange, containerId }: AppLogsProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] h-[90vh] sm:w-[90vw] md:w-[85vw] lg:w-[80vw] xl:w-[75vw] max-w-[1800px] flex flex-col p-2 sm:p-4 md:p-6">
+      <DialogContent className="flex h-[90vh] w-[95vw] max-w-[1800px] flex-col p-2 sm:w-[90vw] sm:p-4 md:w-[85vw] md:p-6 lg:w-[80vw] xl:w-[75vw]">
         <DialogHeader className="mb-2">
           <DialogTitle>Container Logs</DialogTitle>
           <DialogDescription className="truncate">
@@ -56,15 +56,15 @@ export function AppLogs({ open, onOpenChange, containerId }: AppLogsProps) {
         </DialogHeader>
         <div className="flex-1 overflow-auto">
           {loading ? (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex h-full items-center justify-center">
               <p className="text-muted-foreground">Loading logs...</p>
             </div>
           ) : (
-            <pre 
+            <pre
               ref={logsRef}
-              className="font-mono text-xs sm:text-sm md:text-base leading-relaxed whitespace-pre-wrap bg-slate-950 p-2 sm:p-4 md:p-6 rounded-md h-full overflow-y-auto"
+              className="h-full overflow-y-auto rounded-md bg-slate-950 p-2 font-mono text-xs leading-relaxed whitespace-pre-wrap sm:p-4 sm:text-sm md:p-6 md:text-base"
             >
-              {logs || "No logs available"}
+              {logs || 'No logs available'}
             </pre>
           )}
         </div>

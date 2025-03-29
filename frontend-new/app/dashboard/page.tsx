@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import {
   Server,
   Network,
@@ -125,22 +125,22 @@ export default function DashboardPage() {
   function renderChangeIndicator(change: number) {
     if (change > 0) {
       return (
-        <p className="text-muted-foreground flex items-center gap-1 text-xs">
-          <TrendingUp className="h-3 w-3 text-green-500" />+{change}% from
+        <p className="text-muted-foreground flex items-center gap-1 text-[9px] sm:text-xs">
+          <TrendingUp className="h-2.5 w-2.5 text-green-500" />+{change}% from
           average
         </p>
       );
     } else if (change < 0) {
       return (
-        <p className="text-muted-foreground flex items-center gap-1 text-xs">
-          <TrendingDown className="h-3 w-3 text-red-500" />
+        <p className="text-muted-foreground flex items-center gap-1 text-[9px] sm:text-xs">
+          <TrendingDown className="h-2.5 w-2.5 text-red-500" />
           {change}% from average
         </p>
       );
     } else {
       return (
-        <p className="text-muted-foreground flex items-center gap-1 text-xs">
-          <Minus className="h-3 w-3 text-gray-500" />
+        <p className="text-muted-foreground flex items-center gap-1 text-[9px] sm:text-xs">
+          <Minus className="h-2.5 w-2.5 text-gray-500" />
           No change
         </p>
       );
@@ -149,21 +149,21 @@ export default function DashboardPage() {
 
   if (initialLoading) {
     return (
-      <div className="flex h-[80vh] w-full flex-col gap-6 p-2 sm:p-4 md:p-6">
+      <div className="flex h-full w-full flex-col gap-3 p-2 sm:p-4 md:p-6">
         <div className="flex items-center justify-between py-2">
-          <Skeleton className="h-8 w-40" />
-          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-6 w-16" />
         </div>
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4 md:gap-3">
           {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-24 w-full rounded-lg" />
+            <Skeleton key={i} className="h-16 w-full rounded-lg sm:h-18" />
           ))}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-          <Skeleton className="h-80 w-full rounded-lg lg:col-span-4" />
-          <Skeleton className="h-80 w-full rounded-lg lg:col-span-3" />
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-7">
+          <Skeleton className="h-60 w-full rounded-lg lg:col-span-4" />
+          <Skeleton className="h-60 w-full rounded-lg lg:col-span-3" />
         </div>
       </div>
     );
@@ -191,15 +191,15 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-4 pb-8 sm:gap-6">
+    <div className="flex w-full flex-col gap-3 pb-6 sm:gap-4">
       <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-2">
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
           Dashboard
         </h2>
         <div className="flex items-center gap-2">
           {refreshing ? (
-            <div className="text-muted-foreground flex items-center gap-2 text-sm">
-              <RefreshCw className="h-4 w-4 animate-spin" />
+            <div className="text-muted-foreground flex items-center gap-2 text-xs">
+              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
               <span className="hidden sm:inline">Refreshing...</span>
             </div>
           ) : (
@@ -207,77 +207,78 @@ export default function DashboardPage() {
               variant="ghost"
               size="sm"
               onClick={handleManualRefresh}
-              className="h-9 px-2 sm:px-3"
+              className="h-8 px-2 sm:px-3"
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className="h-3.5 w-3.5" />
               <span className="ml-1 hidden sm:inline">Refresh</span>
             </Button>
           )}
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full space-y-4 sm:space-y-6">
-        <TabsContent value="overview" className="space-y-4 sm:space-y-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+      <Tabs defaultValue="overview" className="w-full space-y-3 sm:space-y-4">
+        <TabsContent value="overview" className="space-y-3 sm:space-y-4">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4 md:gap-3">
             {[
               {
                 title: 'Containers',
-                icon: <Server className="text-primary h-4 w-4" />,
+                icon: <Server className="text-primary h-3.5 w-3.5" />,
                 value: dashboardStats.container_count,
                 change: dashboardStats.container_change,
               },
               {
                 title: 'Networks',
-                icon: <Network className="text-primary h-4 w-4" />,
+                icon: <Network className="text-primary h-3.5 w-3.5" />,
                 value: dashboardStats.network_count,
                 change: dashboardStats.network_change,
               },
               {
                 title: 'Volumes',
-                icon: <HardDrive className="text-primary h-4 w-4" />,
+                icon: <HardDrive className="text-primary h-3.5 w-3.5" />,
                 value: dashboardStats.volume_count,
                 change: dashboardStats.volume_change,
               },
               {
                 title: 'System Load',
-                icon: <Activity className="text-primary h-4 w-4" />,
+                icon: <Activity className="text-primary h-3.5 w-3.5" />,
                 value: `${dashboardStats.system_load}%`,
                 change: dashboardStats.load_change,
               },
             ].map((item, index) => (
-              <Card key={index} className="overflow-hidden">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                    {item.icon}
-                    {item.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="text-xl font-bold sm:text-2xl">
-                    {item.value}
+              <Card key={index} className="border-0 shadow-sm">
+                <CardContent className="flex flex-row items-center justify-between p-3">
+                  <div className="space-y-1">
+                    <CardTitle className="flex items-center gap-1.5 text-xs font-medium">
+                      {item.icon}
+                      {item.title}
+                    </CardTitle>
+                    <div className="text-lg font-semibold sm:text-xl">
+                      {item.value}
+                    </div>
                   </div>
-                  {renderChangeIndicator(item.change)}
+                  <div className="bg-primary/5 rounded-full p-1.5">
+                    {renderChangeIndicator(item.change)}
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-            {/* Resource Usage Card */}
-            <Card className="col-span-1 lg:col-span-4">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <Activity className="text-primary h-5 w-5" />
-                  Resource Usage
-                </CardTitle>
-                <CardDescription>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-7">
+            <Card className="col-span-1 border-0 shadow-sm lg:col-span-4">
+              <CardHeader className="p-3 pb-1">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+                    <Activity className="text-primary h-4 w-4" />
+                    Resource Usage
+                  </CardTitle>
+                </div>
+                <CardDescription className="text-xs">
                   System resource utilization over time
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-2 sm:p-4">
-                <div className="h-[240px] w-full sm:h-[280px]">
+              <CardContent className="p-2 sm:p-3">
+                <div className="h-[190px] w-full sm:h-[200px]">
                   {resourceData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart
@@ -300,12 +301,12 @@ export default function DashboardPage() {
                             <stop
                               offset="5%"
                               stopColor="var(--primary)"
-                              stopOpacity={0.4}
+                              stopOpacity={0.2}
                             />
                             <stop
                               offset="95%"
                               stopColor="var(--primary)"
-                              stopOpacity={0.05}
+                              stopOpacity={0.02}
                             />
                           </linearGradient>
                         </defs>
@@ -313,21 +314,25 @@ export default function DashboardPage() {
                           strokeDasharray="3 3"
                           stroke="var(--border)"
                           vertical={false}
+                          opacity={0.4}
                         />
                         <XAxis
                           dataKey="time"
-                          tick={{ fontSize: 11 }}
+                          tick={{ fontSize: 9 }}
                           angle={-45}
                           textAnchor="end"
-                          height={60}
+                          height={50}
                           tickMargin={8}
                           stroke="var(--muted-foreground)"
+                          tickSize={3}
                         />
                         <YAxis
                           domain={[0, 100]}
-                          tick={{ fontSize: 11 }}
+                          tick={{ fontSize: 9 }}
                           stroke="var(--muted-foreground)"
-                          tickCount={6}
+                          tickCount={5}
+                          axisLine={false}
+                          tickSize={3}
                           label={{
                             value: 'Load (%)',
                             angle: -90,
@@ -335,9 +340,9 @@ export default function DashboardPage() {
                             style: {
                               textAnchor: 'middle',
                               fill: 'var(--muted-foreground)',
-                              fontSize: 12,
+                              fontSize: 10,
                             },
-                            dy: 50,
+                            dy: 30,
                           }}
                         />
                         <Tooltip
@@ -345,19 +350,15 @@ export default function DashboardPage() {
                           contentStyle={{
                             backgroundColor: 'var(--background)',
                             borderColor: 'var(--border)',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            borderRadius: '6px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                            padding: '6px 8px',
+                            fontSize: '11px',
                           }}
                           cursor={{
                             stroke: 'var(--muted-foreground)',
                             strokeWidth: 1,
                             strokeDasharray: '4 4',
-                          }}
-                        />
-                        <Legend
-                          wrapperStyle={{
-                            paddingTop: '10px',
-                            fontSize: '12px',
                           }}
                         />
                         <Area
@@ -367,22 +368,20 @@ export default function DashboardPage() {
                           stroke="var(--primary)"
                           fillOpacity={1}
                           fill="url(#colorLoad)"
-                          strokeWidth={2}
+                          strokeWidth={1.5}
                           activeDot={{
-                            r: 6,
+                            r: 4,
                             strokeWidth: 1,
                             stroke: 'var(--background)',
                           }}
-                          isAnimationActive={true}
-                          animationDuration={500}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="bg-muted/10 flex h-full w-full items-center justify-center rounded-lg">
-                      <div className="flex flex-col items-center gap-3">
-                        <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
-                        <p className="text-muted-foreground text-sm">
+                    <div className="bg-muted/5 flex h-full w-full items-center justify-center rounded-lg">
+                      <div className="flex flex-col items-center gap-2">
+                        <RefreshCw className="text-muted-foreground h-6 w-6" />
+                        <p className="text-muted-foreground text-xs">
                           Loading chart data...
                         </p>
                       </div>
@@ -392,43 +391,50 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="col-span-1 lg:col-span-3">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <Clock className="text-primary h-5 w-5" />
-                  Recent Activities
-                </CardTitle>
-                <CardDescription>Latest system events</CardDescription>
+            <Card className="col-span-1 border-0 shadow-sm lg:col-span-3">
+              <CardHeader className="p-3 pb-1">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+                    <Clock className="text-primary h-4 w-4" />
+                    Recent Activities
+                  </CardTitle>
+                  <span className="text-muted-foreground text-[9px] font-normal">
+                    {activities.length} events
+                  </span>
+                </div>
+                <CardDescription className="text-xs">
+                  Latest system events
+                </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 {activities.length > 0 ? (
-                  <div className="max-h-[240px] divide-y overflow-y-auto sm:max-h-[280px]">
+                  <div className="max-h-[190px] overflow-y-auto sm:max-h-[200px]">
                     {activities.map((activity, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-3 p-3 sm:p-4"
+                        className="hover:bg-muted/5 flex items-center gap-2 border-b p-2.5 last:border-0"
                       >
-                        <div className="bg-primary/10 rounded-full p-2">
+                        <div className="bg-primary/5 text-primary rounded-full p-1.5">
                           {activity.type === 'container' ? (
-                            <Server className="text-primary h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            <Server className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           ) : activity.type === 'volume' ? (
-                            <HardDrive className="text-primary h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            <HardDrive className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           ) : activity.type === 'network' ? (
-                            <Network className="text-primary h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            <Network className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           ) : (
-                            <Box className="text-primary h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            <Box className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs font-medium sm:text-sm">
+                          <p className="truncate text-[10px] font-medium sm:text-xs">
                             {activity.name || activity.id || 'Unknown'}
                           </p>
-                          <p className="text-muted-foreground truncate text-[10px] sm:text-xs">
+                          <p className="text-muted-foreground truncate text-[9px] sm:text-[10px]">
                             {activity.status} {activity.type}
                           </p>
                         </div>
-                        <div className="text-muted-foreground flex items-center gap-1 text-[10px] whitespace-nowrap sm:text-xs">
-                          <Clock className="h-3 w-3 flex-shrink-0" />
+                        <div className="text-muted-foreground flex items-center gap-1 text-[9px] whitespace-nowrap sm:text-[10px]">
+                          <Clock className="h-2.5 w-2.5 flex-shrink-0" />
                           {formatDistanceToNow(new Date(activity.time), {
                             addSuffix: true,
                           })}
@@ -437,10 +443,10 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-muted/10 flex h-[240px] items-center justify-center sm:h-[280px]">
-                    <div className="text-muted-foreground flex flex-col items-center gap-3">
-                      <Box className="h-12 w-12 opacity-20" />
-                      <p>No recent activities</p>
+                  <div className="bg-muted/5 flex h-[190px] items-center justify-center sm:h-[200px]">
+                    <div className="text-muted-foreground flex flex-col items-center gap-2">
+                      <Box className="h-10 w-10 opacity-20" />
+                      <p className="text-xs">No recent activities</p>
                     </div>
                   </div>
                 )}
@@ -450,15 +456,17 @@ export default function DashboardPage() {
         </TabsContent>
 
         <TabsContent value="settings">
-          <Card>
-            <CardHeader>
-              <CardTitle>Dashboard Settings</CardTitle>
-              <CardDescription>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="p-3 pb-1">
+              <CardTitle className="text-sm sm:text-base">
+                Dashboard Settings
+              </CardTitle>
+              <CardDescription className="text-xs">
                 Configure your dashboard preferences
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
+            <CardContent className="p-3">
+              <p className="text-muted-foreground text-xs">
                 Dashboard settings will be available soon. Stay tuned for
                 updates!
               </p>

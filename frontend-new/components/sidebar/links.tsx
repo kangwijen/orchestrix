@@ -7,7 +7,6 @@ import {
   Database,
   HardDrive,
 } from 'lucide-react';
-import { title } from 'process';
 
 export interface NavItem {
   title: string;

@@ -132,6 +132,8 @@ export default function ContainersManagePage() {
           break;
         case 'remove':
           await removeContainer(dialogState.containerId, password || '');
+          toast.success('Container removed successfully');
+          fetchContainers();
           break;
       }
       closeDialog();
@@ -305,20 +307,27 @@ export default function ContainersManagePage() {
       header: 'Ports',
       cell: ({ row }) => {
         const ports = row.getValue('ports') as any;
-        const portDisplay = ports
-          ? Object.entries(ports)
-              .filter(([, value]) => value !== null)
-              .map(([k, v]) => {
-                const hostPorts = (v as any[])
-                  ?.map((p: any) => p.HostPort)
-                  .join(', ');
-                return hostPorts
-                  ? `${k.replace('/tcp', '')} → ${hostPorts}`
-                  : null;
-              })
-              .filter(Boolean)
-              .join(', ')
-          : '';
+        
+        if (!ports || Object.keys(ports).length === 0) {
+          return <div>None</div>;
+        }
+        
+        const portDisplay = Object.entries(ports)
+          .map(([portKey, value]) => {
+            if (value === null) {
+              return `${portKey.replace('/tcp', '')} (exposed)`;
+            }
+            
+            const hostPorts = (value as any[])
+              ?.map((p: any) => p.HostPort)
+              .join(', ');
+              
+            return hostPorts
+              ? `${portKey.replace('/tcp', '')} → ${hostPorts}`
+              : null;
+          })
+          .filter(Boolean)
+          .join(', ');
 
         return (
           <div className="max-w-[150px] truncate">{portDisplay || 'None'}</div>

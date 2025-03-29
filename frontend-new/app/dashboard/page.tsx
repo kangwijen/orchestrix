@@ -20,8 +20,6 @@ import {
   Clock,
   Box,
   RefreshCw,
-  LayoutDashboard,
-  Settings,
 } from 'lucide-react';
 import { dashboardApi } from '@/lib/api';
 import { formatDistanceToNow } from 'date-fns';
@@ -32,7 +30,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import { Button } from '@/components/ui/button';

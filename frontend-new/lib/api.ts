@@ -68,4 +68,29 @@ export const dashboardApi = {
   },
 };
 
+export const containerApi = {
+  createContainer: async (containerData: {
+    name?: string;
+    image: string;
+    ports?: Record<string, string>;
+    environment?: Record<string, string>;
+  }) => {
+    try {
+      const response = await api.post('/api/containers/create', containerData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  listContainers: async () => {
+    try {
+      const response = await api.get('/api/containers/list');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export default api;

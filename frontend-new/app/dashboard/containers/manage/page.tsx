@@ -399,8 +399,9 @@ export default function ContainersManagePage() {
     <div className="flex w-full flex-col gap-3 pb-6 sm:gap-4">
       <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-2">
         <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Containers
+          Manage Containers
         </h2>
+
         <div className="flex items-center gap-2">
           {refreshing ? (
             <div className="text-muted-foreground flex items-center gap-2 text-sm">

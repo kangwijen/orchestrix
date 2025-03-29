@@ -7,6 +7,7 @@ import {
   Database,
   HardDrive,
 } from 'lucide-react';
+import { title } from 'process';
 
 export interface NavItem {
   title: string;
@@ -27,6 +28,8 @@ export interface NavigationStructure {
   mainNavigation: NavGroup;
   containerManagement: {
     containers: NavItemWithSubItems;
+    networks: NavItemWithSubItems;
+    volumes: NavItemWithSubItems;
     otherItems: NavGroup;
   };
 }
@@ -60,19 +63,43 @@ export const navigationLinks: NavigationStructure = {
         },
       ],
     },
-    otherItems: {
-      title: 'Container Management',
-      items: [
+    networks: {
+      title: 'Networks',
+      url: '#',
+      icon: Network,
+      subItems: [
         {
-          title: 'Networks',
-          url: '/dashboard/networks',
+          title: 'Manage',
+          url: '/dashboard/networks/manage',
           icon: Network,
         },
         {
-          title: 'Volumes',
-          url: '/dashboard/volumes',
+          title: 'Create',
+          url: '/dashboard/networks/create',
+          icon: Plus,
+        },
+      ],
+    },
+    volumes: {
+      title: 'Volumes',
+      url: '#',
+      icon: Database,
+      subItems: [
+        {
+          title: 'Manage',
+          url: '/dashboard/volumes/manage',
           icon: Database,
         },
+        {
+          title: 'Create',
+          url: '/dashboard/volumes/create',
+          icon: Plus,
+        },
+      ],
+    },
+    otherItems: {
+      title: 'Container Management',
+      items: [
         {
           title: 'System',
           url: '/dashboard/system',

@@ -81,11 +81,11 @@ export default function DashboardPage() {
       setDashboardStats(stats);
 
       const newDataPoint = {
-        time: new Date().toLocaleTimeString([], { 
-          hour: '2-digit', 
+        time: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
-          hour12: false
+          hour12: false,
         }),
         load: stats.system_load,
       };
@@ -125,21 +125,21 @@ export default function DashboardPage() {
   function renderChangeIndicator(change: number) {
     if (change > 0) {
       return (
-        <p className="flex items-center gap-1 text-xs text-muted-foreground">
+        <p className="text-muted-foreground flex items-center gap-1 text-xs">
           <TrendingUp className="h-3 w-3 text-green-500" />+{change}% from
           average
         </p>
       );
     } else if (change < 0) {
       return (
-        <p className="flex items-center gap-1 text-xs text-muted-foreground">
+        <p className="text-muted-foreground flex items-center gap-1 text-xs">
           <TrendingDown className="h-3 w-3 text-red-500" />
           {change}% from average
         </p>
       );
     } else {
       return (
-        <p className="flex items-center gap-1 text-xs text-muted-foreground">
+        <p className="text-muted-foreground flex items-center gap-1 text-xs">
           <Minus className="h-3 w-3 text-gray-500" />
           No change
         </p>
@@ -154,13 +154,13 @@ export default function DashboardPage() {
           <Skeleton className="h-8 w-40" />
           <Skeleton className="h-8 w-24" />
         </div>
-        
+
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
           {[1, 2, 3, 4].map(i => (
             <Skeleton key={i} className="h-24 w-full rounded-lg" />
           ))}
         </div>
-        
+
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
           <Skeleton className="h-80 w-full rounded-lg lg:col-span-4" />
           <Skeleton className="h-80 w-full rounded-lg lg:col-span-3" />
@@ -177,8 +177,8 @@ export default function DashboardPage() {
             <Box className="h-12 w-12" />
           </div>
           <p className="text-lg font-medium">{error}</p>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleManualRefresh}
             className="mt-2"
           >
@@ -192,18 +192,20 @@ export default function DashboardPage() {
 
   return (
     <div className="flex w-full flex-col gap-4 pb-8 sm:gap-6">
-      <div className="sticky top-0 z-10 flex items-center justify-between bg-background py-2">
-        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Dashboard</h2>
+      <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-2">
+        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          Dashboard
+        </h2>
         <div className="flex items-center gap-2">
           {refreshing ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <RefreshCw className="h-4 w-4 animate-spin" />
               <span className="hidden sm:inline">Refreshing...</span>
             </div>
           ) : (
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleManualRefresh}
               className="h-9 px-2 sm:px-3"
             >
@@ -221,25 +223,25 @@ export default function DashboardPage() {
             {[
               {
                 title: 'Containers',
-                icon: <Server className="h-4 w-4 text-primary" />,
+                icon: <Server className="text-primary h-4 w-4" />,
                 value: dashboardStats.container_count,
                 change: dashboardStats.container_change,
               },
               {
                 title: 'Networks',
-                icon: <Network className="h-4 w-4 text-primary" />,
+                icon: <Network className="text-primary h-4 w-4" />,
                 value: dashboardStats.network_count,
                 change: dashboardStats.network_change,
               },
               {
                 title: 'Volumes',
-                icon: <HardDrive className="h-4 w-4 text-primary" />,
+                icon: <HardDrive className="text-primary h-4 w-4" />,
                 value: dashboardStats.volume_count,
                 change: dashboardStats.volume_change,
               },
               {
                 title: 'System Load',
-                icon: <Activity className="h-4 w-4 text-primary" />,
+                icon: <Activity className="text-primary h-4 w-4" />,
                 value: `${dashboardStats.system_load}%`,
                 change: dashboardStats.load_change,
               },
@@ -252,7 +254,9 @@ export default function DashboardPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <div className="text-xl font-bold sm:text-2xl">{item.value}</div>
+                  <div className="text-xl font-bold sm:text-2xl">
+                    {item.value}
+                  </div>
                   {renderChangeIndicator(item.change)}
                 </CardContent>
               </Card>
@@ -265,7 +269,7 @@ export default function DashboardPage() {
             <Card className="col-span-1 lg:col-span-4">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <Activity className="h-5 w-5 text-primary" />
+                  <Activity className="text-primary h-5 w-5" />
                   Resource Usage
                 </CardTitle>
                 <CardDescription>
@@ -278,11 +282,11 @@ export default function DashboardPage() {
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart
                         data={resourceData}
-                        margin={{ 
-                          top: 10, 
-                          right: 10, 
-                          left: 0, 
-                          bottom: 30 
+                        margin={{
+                          top: 10,
+                          right: 10,
+                          left: 0,
+                          bottom: 30,
                         }}
                       >
                         <defs>
@@ -364,17 +368,21 @@ export default function DashboardPage() {
                           fillOpacity={1}
                           fill="url(#colorLoad)"
                           strokeWidth={2}
-                          activeDot={{ r: 6, strokeWidth: 1, stroke: 'var(--background)' }}
+                          activeDot={{
+                            r: 6,
+                            strokeWidth: 1,
+                            stroke: 'var(--background)',
+                          }}
                           isAnimationActive={true}
                           animationDuration={500}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center rounded-lg bg-muted/10">
+                    <div className="bg-muted/10 flex h-full w-full items-center justify-center rounded-lg">
                       <div className="flex flex-col items-center gap-3">
-                        <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">
+                        <RefreshCw className="text-muted-foreground h-8 w-8 animate-spin" />
+                        <p className="text-muted-foreground text-sm">
                           Loading chart data...
                         </p>
                       </div>
@@ -387,12 +395,10 @@ export default function DashboardPage() {
             <Card className="col-span-1 lg:col-span-3">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <Clock className="h-5 w-5 text-primary" />
+                  <Clock className="text-primary h-5 w-5" />
                   Recent Activities
                 </CardTitle>
-                <CardDescription>
-                  Latest system events
-                </CardDescription>
+                <CardDescription>Latest system events</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 {activities.length > 0 ? (
@@ -402,26 +408,26 @@ export default function DashboardPage() {
                         key={index}
                         className="flex items-center gap-3 p-3 sm:p-4"
                       >
-                        <div className="rounded-full bg-primary/10 p-2">
+                        <div className="bg-primary/10 rounded-full p-2">
                           {activity.type === 'container' ? (
-                            <Server className="h-3.5 w-3.5 text-primary sm:h-4 sm:w-4" />
+                            <Server className="text-primary h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           ) : activity.type === 'volume' ? (
-                            <HardDrive className="h-3.5 w-3.5 text-primary sm:h-4 sm:w-4" />
+                            <HardDrive className="text-primary h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           ) : activity.type === 'network' ? (
-                            <Network className="h-3.5 w-3.5 text-primary sm:h-4 sm:w-4" />
+                            <Network className="text-primary h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           ) : (
-                            <Box className="h-3.5 w-3.5 text-primary sm:h-4 sm:w-4" />
+                            <Box className="text-primary h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-xs font-medium sm:text-sm">
                             {activity.name || activity.id || 'Unknown'}
                           </p>
-                          <p className="truncate text-[10px] text-muted-foreground sm:text-xs">
+                          <p className="text-muted-foreground truncate text-[10px] sm:text-xs">
                             {activity.status} {activity.type}
                           </p>
                         </div>
-                        <div className="flex items-center gap-1 whitespace-nowrap text-[10px] text-muted-foreground sm:text-xs">
+                        <div className="text-muted-foreground flex items-center gap-1 text-[10px] whitespace-nowrap sm:text-xs">
                           <Clock className="h-3 w-3 flex-shrink-0" />
                           {formatDistanceToNow(new Date(activity.time), {
                             addSuffix: true,
@@ -431,8 +437,8 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="flex h-[240px] items-center justify-center bg-muted/10 sm:h-[280px]">
-                    <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                  <div className="bg-muted/10 flex h-[240px] items-center justify-center sm:h-[280px]">
+                    <div className="text-muted-foreground flex flex-col items-center gap-3">
                       <Box className="h-12 w-12 opacity-20" />
                       <p>No recent activities</p>
                     </div>
@@ -442,7 +448,7 @@ export default function DashboardPage() {
             </Card>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="settings">
           <Card>
             <CardHeader>
@@ -453,7 +459,8 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Dashboard settings will be available soon. Stay tuned for updates!
+                Dashboard settings will be available soon. Stay tuned for
+                updates!
               </p>
             </CardContent>
           </Card>

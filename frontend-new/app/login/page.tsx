@@ -67,11 +67,13 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-background via-background/95 to-background/90 p-4 md:p-0">
+    <div className="from-background via-background/95 to-background/90 flex min-h-[100dvh] items-center justify-center bg-gradient-to-br p-4 sm:p-6 lg:p-8">
       <div className="mx-auto w-full max-w-[420px] shadow-xl">
         <Card className="border-0 backdrop-blur-sm">
           <CardHeader className="space-y-3 pb-6">
-            <CardTitle className="text-center text-2xl font-bold">Login</CardTitle>
+            <CardTitle className="text-center text-2xl font-bold">
+              Login
+            </CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <Form {...form}>
@@ -119,18 +121,18 @@ export default function Login() {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="absolute right-0 top-0 h-full px-3 py-0 hover:bg-transparent"
+                            className="absolute top-0 right-0 h-full px-3 py-0 hover:bg-transparent"
                             onClick={() => setShowPassword(!showPassword)}
                             disabled={isLoading}
                           >
                             {showPassword ? (
                               <EyeOffIcon
-                                className="h-4 w-4 text-muted-foreground"
+                                className="text-muted-foreground h-4 w-4"
                                 aria-hidden="true"
                               />
                             ) : (
                               <EyeIcon
-                                className="h-4 w-4 text-muted-foreground"
+                                className="text-muted-foreground h-4 w-4"
                                 aria-hidden="true"
                               />
                             )}

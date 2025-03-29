@@ -50,12 +50,12 @@ export const navigationLinks: NavigationStructure = {
       subItems: [
         {
           title: 'Manage',
-          url: '/dashboard/containers',
+          url: '/dashboard/containers/manage',
           icon: Package,
         },
         {
           title: 'Create',
-          url: '/dashboard/containers/new',
+          url: '/dashboard/containers/create',
           icon: Plus,
         },
       ],

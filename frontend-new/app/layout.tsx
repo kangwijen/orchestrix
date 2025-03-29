@@ -7,18 +7,18 @@ import './globals.css';
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
-  });
+});
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
-  });
+});
 
 export const metadata: Metadata = {
   title: 'Orchestrix',
   description:
     'A modern DevOps management platform to streamline the orchestration of DevOps tools',
-  };
+};
 
 export default function RootLayout({
   children,

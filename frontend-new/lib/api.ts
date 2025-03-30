@@ -91,6 +91,56 @@ export const containerApi = {
       throw error;
     }
   },
+  
+  buildFromDockerfile: async (file: File, containerName?: string, onProgress?: (progress: number) => void) => {
+    try {
+      const formData = new FormData();
+      formData.append('dockerfile', file);
+      if (containerName) {
+        formData.append('name', containerName);
+      }
+      
+      const response = await api.post('/api/containers/build/dockerfile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total && onProgress) {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progress);
+          }
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  buildFromZip: async (file: File, containerName?: string, onProgress?: (progress: number) => void) => {
+    try {
+      const formData = new FormData();
+      formData.append('zipfile', file);
+      if (containerName) {
+        formData.append('name', containerName);
+      }
+      
+      const response = await api.post('/api/containers/build/zip', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total && onProgress) {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progress);
+          }
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default api;

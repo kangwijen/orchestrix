@@ -1,11 +1,17 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.security import check_password_hash
 from flask_cors import cross_origin
+from werkzeug.utils import secure_filename
 
 from models import User
 
 import docker
+import tempfile
+import os
+import uuid
+import shutil
+import zipfile
 
 import re
 from datetime import datetime
@@ -210,4 +216,136 @@ def create_container():
         }), 201
     except Exception as e:
         return jsonify({"message": "Container creation failed"}), 400
+
+@container_bp.route('/api/containers/build/dockerfile', methods=['POST'])
+@jwt_required()
+def build_from_dockerfile():
+    if 'dockerfile' not in request.files:
+        return jsonify({"message": "No dockerfile provided"}), 400
+
+    file = request.files['dockerfile']
+    if file.filename == '':
+        return jsonify({"message": "No dockerfile selected"}), 400
+
+    name = request.form.get('name')
+    if name and not re.match("^[a-zA-Z0-9][a-zA-Z0-9_.-]+$", name):
+        return jsonify({"message": "Invalid container name format"}), 400
+
+    try:
+        client = get_docker_client()
+        
+        build_dir = os.path.join(tempfile.gettempdir(), f"docker_build_{uuid.uuid4().hex}")
+        os.makedirs(build_dir, exist_ok=True)
+        
+        try:
+            dockerfile_path = os.path.join(build_dir, "Dockerfile")
+            file.save(dockerfile_path)
+            
+            image_tag = f"local-build-{uuid.uuid4().hex[:8]}"
+            image, logs = client.images.build(
+                path=build_dir,
+                tag=image_tag,
+                rm=True
+            )
+            
+            container = client.containers.create(
+                image=image_tag,
+                name=name,
+                detach=True
+            )
+            
+            return jsonify({
+                "message": "Container built successfully",
+                "container_id": container.id,
+                "image_id": image.id
+            }), 201
+            
+        finally:
+            if os.path.exists(build_dir):
+                shutil.rmtree(build_dir)
+                
+    except docker.errors.BuildError as e:
+        return jsonify({"message": f"Build error: {str(e)}"}), 400
+    except docker.errors.APIError as e:
+        return jsonify({"message": f"Docker API error: {str(e)}"}), 400
+    except Exception as e:
+        current_app.logger.error(f"Error in build_from_dockerfile: {str(e)}")
+        return jsonify({"message": "Failed to build container"}), 500
+
+@container_bp.route('/api/containers/build/zip', methods=['POST'])
+@jwt_required()
+def build_from_zip():
+    if 'zipfile' not in request.files:
+        return jsonify({"message": "No ZIP file provided"}), 400
+
+    file = request.files['zipfile']
+    if file.filename == '':
+        return jsonify({"message": "No ZIP file selected"}), 400
+
+    if not file.filename.endswith('.zip'):
+        return jsonify({"message": "File must be a ZIP archive"}), 400
+
+    name = request.form.get('name')
+    if name and not re.match("^[a-zA-Z0-9][a-zA-Z0-9_.-]+$", name):
+        return jsonify({"message": "Invalid container name format"}), 400
+
+    try:
+        client = get_docker_client()
+        
+        build_dir = os.path.join(tempfile.gettempdir(), f"docker_build_{uuid.uuid4().hex}")
+        os.makedirs(build_dir, exist_ok=True)
+        
+        try:
+            zip_path = os.path.join(build_dir, "source.zip")
+            file.save(zip_path)
+            
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                zip_ref.extractall(build_dir)
+            
+            dockerfile_path = None
+            for root, _, files in os.walk(build_dir):
+                for filename in files:
+                    if filename.lower() == "dockerfile":
+                        dockerfile_path = os.path.join(root, filename)
+                        break
+                if dockerfile_path:
+                    break
+            
+            if not dockerfile_path:
+                return jsonify({"message": "No Dockerfile found in the ZIP archive"}), 400
+            
+            dockerfile_dir = os.path.dirname(dockerfile_path)
+            
+            image_tag = f"local-build-{uuid.uuid4().hex[:8]}"
+            image, logs = client.images.build(
+                path=dockerfile_dir,
+                tag=image_tag,
+                rm=True
+            )
+            
+            container = client.containers.create(
+                image=image_tag,
+                name=name,
+                detach=True
+            )
+            
+            return jsonify({
+                "message": "Container built successfully from ZIP",
+                "container_id": container.id,
+                "image_id": image.id
+            }), 201
+            
+        finally:
+            if os.path.exists(build_dir):
+                shutil.rmtree(build_dir)
+                
+    except zipfile.BadZipFile:
+        return jsonify({"message": "Invalid ZIP file"}), 400
+    except docker.errors.BuildError as e:
+        return jsonify({"message": f"Build error: {str(e)}"}), 400
+    except docker.errors.APIError as e:
+        return jsonify({"message": f"Docker API error: {str(e)}"}), 400
+    except Exception as e:
+        current_app.logger.error(f"Error in build_from_zip: {str(e)}")
+        return jsonify({"message": "Failed to build container from ZIP"}), 500
 

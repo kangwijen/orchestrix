@@ -62,6 +62,16 @@ def start_container(container_id):
         return jsonify({"message": f"Container {container_id} started successfully."}), 200
     except ValueError as e:
         return jsonify({"message": str(e)}), 400
+    except docker.errors.NotFound:
+        return jsonify({"message": "Container not found"}), 404
+    except docker.errors.APIError as e:
+        error_msg = str(e)
+        if "port is already allocated" in error_msg:
+            port_match = re.search(r'Bind for 0.0.0.0:(\d+)', error_msg)
+            if port_match:
+                port = port_match.group(1)
+                return jsonify({"message": f"Port {port} is already in use"}), 409
+        return jsonify({"message": f"Error starting container: {error_msg}"}), 400
     except Exception as e:
         return jsonify({"message": "Operation failed"}), 400
         

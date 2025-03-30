@@ -243,7 +243,7 @@ export default function DashboardPage() {
               },
             ].map((item, index) => (
               <Card key={index} className="border-0 shadow-sm">
-                <CardContent className="flex flex-row items-center justify-between p-3">
+                <CardContent className="flex flex-row items-center justify-between p-6">
                   <div className="space-y-1">
                     <CardTitle className="flex items-center gap-1.5 text-xs font-medium">
                       {item.icon}
@@ -263,7 +263,7 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-7">
             <Card className="col-span-1 border-0 shadow-sm lg:col-span-4">
-              <CardHeader className="p-3 pb-1">
+              <CardHeader className="p-6 pb-1">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                     <Activity className="text-primary h-4 w-4" />
@@ -274,7 +274,7 @@ export default function DashboardPage() {
                   System resource utilization over time
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-2 sm:p-3">
+              <CardContent className="p-5 sm:p-6">
                 <div className="h-[190px] w-full sm:h-[200px]">
                   {resourceData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
@@ -389,13 +389,13 @@ export default function DashboardPage() {
             </Card>
 
             <Card className="col-span-1 border-0 shadow-sm lg:col-span-3">
-              <CardHeader className="p-3 pb-1">
+              <CardHeader className="p-6 pb-1">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
                     <Clock className="text-primary h-4 w-4" />
                     Recent Activities
                   </CardTitle>
-                  <span className="text-muted-foreground text-[9px] font-normal">
+                  <span className="text-muted-foreground text-xs font-normal">
                     {activities.length} events
                   </span>
                 </div>
@@ -423,14 +423,14 @@ export default function DashboardPage() {
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[10px] font-medium sm:text-xs">
+                          <p className="truncate text-xs font-medium sm:text-xs">
                             {activity.name || activity.id || 'Unknown'}
                           </p>
-                          <p className="text-muted-foreground truncate text-[9px] sm:text-[10px]">
+                          <p className="text-muted-foreground truncate text-xs sm:text-xs">
                             {activity.status} {activity.type}
                           </p>
                         </div>
-                        <div className="text-muted-foreground flex items-center gap-1 text-[9px] whitespace-nowrap sm:text-[10px]">
+                        <div className="text-muted-foreground flex items-center gap-1 text-xs whitespace-nowrap sm:text-s">
                           <Clock className="h-2.5 w-2.5 flex-shrink-0" />
                           {formatDistanceToNow(new Date(activity.time), {
                             addSuffix: true,

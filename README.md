@@ -52,12 +52,12 @@ Container Management
 - [ ] Get stats of a container
 
 Network Management
-- [ ] List networks
-- [ ] Create a network
-- [ ] Remove a network
+- [x] List networks
+- [x] Create a network
+- [x] Remove a network
 - [ ] Inspect a network
-- [ ] Connect a container to a network
-- [ ] Disconnect a container from a network
+- [x] Connect a container to a network
+- [x] Disconnect a container from a network
 
 Volume Management
 - [ ] List volumes

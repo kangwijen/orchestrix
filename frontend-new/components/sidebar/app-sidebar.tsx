@@ -80,6 +80,7 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              {/* Containers Collapsible */}
               <SidebarMenuItem>
                 <Collapsible
                   defaultOpen
@@ -95,6 +96,80 @@ export function AppSidebar() {
                   <CollapsibleContent>
                     <div className="mt-1 space-y-1 pl-6">
                       {navigationLinks.containerManagement.containers.subItems.map(
+                        subItem => (
+                          <SidebarMenuButton
+                            key={subItem.title}
+                            asChild
+                            isActive={pathname === subItem.url}
+                            tooltip={subItem.title}
+                            className="w-full py-2.5 md:py-2"
+                          >
+                            <Link href={subItem.url} onClick={handleLinkClick}>
+                              <subItem.icon className="h-5 w-5 md:h-4 md:w-4" />
+                              <span className="text-base md:text-sm">
+                                {subItem.title}
+                              </span>
+                            </Link>
+                          </SidebarMenuButton>
+                        ),
+                      )}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <Collapsible
+                  defaultOpen
+                  className="group/networksCollapsible w-full"
+                >
+                  <CollapsibleTrigger className="hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-md px-3 py-2.5 md:py-2">
+                    <navigationLinks.containerManagement.networks.icon className="mr-2 h-5 w-5 md:h-4 md:w-4" />
+                    <span className="text-base md:text-sm">
+                      {navigationLinks.containerManagement.networks.title}
+                    </span>
+                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/networksCollapsible:rotate-180" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="mt-1 space-y-1 pl-6">
+                      {navigationLinks.containerManagement.networks.subItems.map(
+                        subItem => (
+                          <SidebarMenuButton
+                            key={subItem.title}
+                            asChild
+                            isActive={pathname === subItem.url}
+                            tooltip={subItem.title}
+                            className="w-full py-2.5 md:py-2"
+                          >
+                            <Link href={subItem.url} onClick={handleLinkClick}>
+                              <subItem.icon className="h-5 w-5 md:h-4 md:w-4" />
+                              <span className="text-base md:text-sm">
+                                {subItem.title}
+                              </span>
+                            </Link>
+                          </SidebarMenuButton>
+                        ),
+                      )}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <Collapsible
+                  defaultOpen
+                  className="group/volumesCollapsible w-full"
+                >
+                  <CollapsibleTrigger className="hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-md px-3 py-2.5 md:py-2">
+                    <navigationLinks.containerManagement.volumes.icon className="mr-2 h-5 w-5 md:h-4 md:w-4" />
+                    <span className="text-base md:text-sm">
+                      {navigationLinks.containerManagement.volumes.title}
+                    </span>
+                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/volumesCollapsible:rotate-180" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="mt-1 space-y-1 pl-6">
+                      {navigationLinks.containerManagement.volumes.subItems.map(
                         subItem => (
                           <SidebarMenuButton
                             key={subItem.title}

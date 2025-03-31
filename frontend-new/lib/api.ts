@@ -143,4 +143,62 @@ export const containerApi = {
   },
 };
 
+export const networkApi = {
+  createNetwork: async (networkData: {
+    name: string;
+    driver: string;
+  }) => {
+    try {
+      const response = await api.post('/api/networks/create', networkData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  listNetworks: async () => {
+    try {
+      const response = await api.get('/api/networks/list');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  removeNetwork: async (networkId: string, password: string) => {
+    try {
+      const response = await api.delete(`/api/networks/remove/${networkId}`, {
+        data: { password },
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  connectContainer: async (networkId: string, containerId: string) => {
+    try {
+      const response = await api.post(`/api/networks/connect`, {
+        networkId,
+        containerId,
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  disconnectContainer: async (networkId: string, containerId: string) => {
+    try {
+      const response = await api.post(`/api/networks/disconnect`, {
+        networkId,
+        containerId,
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export default api;

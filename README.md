@@ -6,7 +6,7 @@ Orchestrix is a modern DevOps management platform to streamline the management o
 Simplify workflows, monitor deployments, and manage your infrastructure seamlessly, all in one place.
 
 ## Project Structure
-- `/frontend` - React-based web application
+- `/frontend-new` - Next.js based web application
 - `/backend` - Python backend server
 
 ## Quick Start
@@ -39,7 +39,7 @@ python app.py
 Container Management
 - [x] List all containers
 - [x] Create a container from an image
-- [ ] Create a container from custom Dockerfile
+- [x] Create a container from custom Dockerfile
 - [ ] Create a container from custom Compose file
 - [x] Remove a container
 - [x] Start a container
@@ -65,6 +65,7 @@ Volume Management
 - [ ] Remove a volume
 - [ ] Inspect a volume
 - [ ] Mount a volume to a container
+- [ ] Unmount a volume from a container
 
 System Management
 - [ ] Get Docker version & info

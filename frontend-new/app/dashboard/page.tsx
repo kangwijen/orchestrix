@@ -430,7 +430,7 @@ export default function DashboardPage() {
                             {activity.status} {activity.type}
                           </p>
                         </div>
-                        <div className="text-muted-foreground flex items-center gap-1 text-xs whitespace-nowrap sm:text-s">
+                        <div className="text-muted-foreground sm:text-s flex items-center gap-1 text-xs whitespace-nowrap">
                           <Clock className="h-2.5 w-2.5 flex-shrink-0" />
                           {formatDistanceToNow(new Date(activity.time), {
                             addSuffix: true,

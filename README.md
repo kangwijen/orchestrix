@@ -70,6 +70,5 @@ Volume Management
 System Management
 - [ ] Get Docker version & info
 - [ ] Prune unused objects
-- [ ] Monitor events & stats
 - [ ] Configure Docker settings
 

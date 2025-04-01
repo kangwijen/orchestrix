@@ -21,6 +21,7 @@ from infrastructure.routes import infrastructure_bp
 from dashboard.routes import dashboard_bp
 
 from waitress import serve
+from datetime import datetime, timezone
 
 dotenv_path = Path(__file__).parent.parent / '.env'
 load_dotenv(dotenv_path)
@@ -53,7 +54,13 @@ def create_app():
         admin_user = User.query.filter_by(username='admin').first()
         if not admin_user:
             hashed_password = generate_password_hash('admin')
-            admin_user = User(username='admin', password=hashed_password)
+            admin_user = User(
+                username='admin',
+                password=hashed_password,
+                email='admin@orchestrix.io',
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc)
+            )
             db.session.add(admin_user)
             db.session.commit()
 

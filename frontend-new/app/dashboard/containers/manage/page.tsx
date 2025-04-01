@@ -307,21 +307,21 @@ export default function ContainersManagePage() {
       header: 'Ports',
       cell: ({ row }) => {
         const ports = row.getValue('ports') as any;
-        
+
         if (!ports || Object.keys(ports).length === 0) {
           return <div>None</div>;
         }
-        
+
         const portDisplay = Object.entries(ports)
           .map(([portKey, value]) => {
             if (value === null) {
               return `${portKey.replace('/tcp', '')} (exposed)`;
             }
-            
+
             const hostPorts = (value as any[])
               ?.map((p: any) => p.HostPort)
               .join(', ');
-              
+
             return hostPorts
               ? `${portKey.replace('/tcp', '')} → ${hostPorts}`
               : null;

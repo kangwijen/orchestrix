@@ -46,6 +46,36 @@ export const authApi = {
       window.location.href = '/login';
     }
   },
+
+  getProfile: async () => {
+    try {
+      const response = await api.get('/api/profile');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updateProfile: async (profileData: { email?: string }) => {
+    try {
+      const response = await api.put('/api/profile', profileData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  changePassword: async (passwordData: {
+    current_password: string;
+    new_password: string;
+  }) => {
+    try {
+      const response = await api.post('/api/change-password', passwordData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export const dashboardApi = {
@@ -91,50 +121,66 @@ export const containerApi = {
       throw error;
     }
   },
-  
-  buildFromDockerfile: async (file: File, containerName?: string, onProgress?: (progress: number) => void) => {
+
+  buildFromDockerfile: async (
+    file: File,
+    containerName?: string,
+    onProgress?: (progress: number) => void,
+  ) => {
     try {
       const formData = new FormData();
       formData.append('dockerfile', file);
       if (containerName) {
         formData.append('name', containerName);
       }
-      
-      const response = await api.post('/api/containers/build/dockerfile', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+
+      const response = await api.post(
+        '/api/containers/build/dockerfile',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: progressEvent => {
+            if (progressEvent.total && onProgress) {
+              const progress = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
+              onProgress(progress);
+            }
+          },
         },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total && onProgress) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            onProgress(progress);
-          }
-        }
-      });
+      );
       return response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  buildFromZip: async (file: File, containerName?: string, onProgress?: (progress: number) => void) => {
+  buildFromZip: async (
+    file: File,
+    containerName?: string,
+    onProgress?: (progress: number) => void,
+  ) => {
     try {
       const formData = new FormData();
       formData.append('zipfile', file);
       if (containerName) {
         formData.append('name', containerName);
       }
-      
+
       const response = await api.post('/api/containers/build/zip', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        onUploadProgress: (progressEvent) => {
+        onUploadProgress: progressEvent => {
           if (progressEvent.total && onProgress) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total,
+            );
             onProgress(progress);
           }
-        }
+        },
       });
       return response.data;
     } catch (error) {
@@ -144,10 +190,7 @@ export const containerApi = {
 };
 
 export const networkApi = {
-  createNetwork: async (networkData: {
-    name: string;
-    driver: string;
-  }) => {
+  createNetwork: async (networkData: { name: string; driver: string }) => {
     try {
       const response = await api.post('/api/networks/create', networkData);
       return response.data;

@@ -25,13 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { AppDialog } from '@/components/dialog/app-dialog';
 import {
@@ -41,8 +35,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type Network = {
   id: string;
@@ -77,14 +71,18 @@ export default function NetworksManagePage() {
     networkId: null,
   });
 
-  const [containers, setContainers] = useState<{id: string; name: string; status: string}[]>([]);
+  const [containers, setContainers] = useState<
+    { id: string; name: string; status: string }[]
+  >([]);
   const [connectDialog, setConnectDialog] = useState({
     open: false,
     networkId: null as string | null,
     networkName: null as string | null,
-    actionType: 'connect' as 'connect' | 'disconnect'
+    actionType: 'connect' as 'connect' | 'disconnect',
   });
-  const [selectedContainerIds, setSelectedContainerIds] = useState<string[]>([]);
+  const [selectedContainerIds, setSelectedContainerIds] = useState<string[]>(
+    [],
+  );
   const [isProcessing, setIsProcessing] = useState(false);
 
   const openDialog = (networkId: string) => {
@@ -104,9 +102,7 @@ export default function NetworksManagePage() {
       fetchNetworks();
       closeDialog();
     } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || 'Failed to remove network'
-      );
+      toast.error(error.response?.data?.message || 'Failed to remove network');
       closeDialog();
     }
   };
@@ -144,12 +140,16 @@ export default function NetworksManagePage() {
     fetchNetworks(true);
   };
 
-  const openConnectDialog = (networkId: string, networkName: string, actionType: 'connect' | 'disconnect') => {
-    setConnectDialog({ 
-      open: true, 
-      networkId, 
+  const openConnectDialog = (
+    networkId: string,
+    networkName: string,
+    actionType: 'connect' | 'disconnect',
+  ) => {
+    setConnectDialog({
+      open: true,
+      networkId,
       networkName,
-      actionType
+      actionType,
     });
     setSelectedContainerIds([]);
     fetchAvailableContainers(networkId, actionType);
@@ -159,7 +159,10 @@ export default function NetworksManagePage() {
     setConnectDialog(prev => ({ ...prev, open: false }));
   };
 
-  const fetchAvailableContainers = async (networkId: string, actionType: 'connect' | 'disconnect') => {
+  const fetchAvailableContainers = async (
+    networkId: string,
+    actionType: 'connect' | 'disconnect',
+  ) => {
     try {
       const response = await api.get('/api/containers/list');
       if (actionType === 'connect') {
@@ -167,7 +170,9 @@ export default function NetworksManagePage() {
       } else {
         const networkInfo = networks.find(n => n.id === networkId);
         if (networkInfo && networkInfo.containers > 0) {
-          const connectedResponse = await api.get(`/api/networks/containers/${networkId}`);
+          const connectedResponse = await api.get(
+            `/api/networks/containers/${networkId}`,
+          );
           setContainers(connectedResponse.data);
         } else {
           setContainers([]);
@@ -181,9 +186,9 @@ export default function NetworksManagePage() {
 
   const handleContainerNetworkAction = async () => {
     if (!connectDialog.networkId || selectedContainerIds.length === 0) return;
-    
+
     setIsProcessing(true);
-    
+
     try {
       for (const containerId of selectedContainerIds) {
         if (connectDialog.actionType === 'connect') {
@@ -198,14 +203,20 @@ export default function NetworksManagePage() {
           });
         }
       }
-      
-      const action = connectDialog.actionType === 'connect' ? 'connected to' : 'disconnected from';
-      toast.success(`Containers ${action} ${connectDialog.networkName} network`);
+
+      const action =
+        connectDialog.actionType === 'connect'
+          ? 'connected to'
+          : 'disconnected from';
+      toast.success(
+        `Containers ${action} ${connectDialog.networkName} network`,
+      );
       fetchNetworks();
       closeConnectDialog();
     } catch (error: any) {
       toast.error(
-        error.response?.data?.message || `Failed to ${connectDialog.actionType} containers`
+        error.response?.data?.message ||
+          `Failed to ${connectDialog.actionType} containers`,
       );
     } finally {
       setIsProcessing(false);
@@ -233,11 +244,7 @@ export default function NetworksManagePage() {
       header: 'Driver',
       cell: ({ row }) => {
         const driver = row.getValue('driver') as string;
-        return (
-          <Badge variant="outline">
-            {driver}
-          </Badge>
-        );
+        return <Badge variant="outline">{driver}</Badge>;
       },
     },
     {
@@ -273,9 +280,10 @@ export default function NetworksManagePage() {
       id: 'actions',
       cell: ({ row }) => {
         const network = row.original;
-        const isSystemNetwork = network.name === 'bridge' || 
-                              network.name === 'host' || 
-                              network.name === 'none';
+        const isSystemNetwork =
+          network.name === 'bridge' ||
+          network.name === 'host' ||
+          network.name === 'none';
 
         return (
           <DropdownMenu>
@@ -290,7 +298,9 @@ export default function NetworksManagePage() {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem
-                onClick={() => openConnectDialog(network.id, network.name, 'connect')}
+                onClick={() =>
+                  openConnectDialog(network.id, network.name, 'connect')
+                }
               >
                 <LinkIcon className="mr-2 h-4 w-4" />
                 <span>Connect Container</span>
@@ -298,7 +308,9 @@ export default function NetworksManagePage() {
 
               {network.containers > 0 && (
                 <DropdownMenuItem
-                  onClick={() => openConnectDialog(network.id, network.name, 'disconnect')}
+                  onClick={() =>
+                    openConnectDialog(network.id, network.name, 'disconnect')
+                  }
                 >
                   <Link2Off className="mr-2 h-4 w-4" />
                   <span>Disconnect Container</span>
@@ -319,7 +331,9 @@ export default function NetworksManagePage() {
 
               {isSystemNetwork && (
                 <DropdownMenuItem disabled>
-                  <span className="text-muted-foreground">System network (cannot modify)</span>
+                  <span className="text-muted-foreground">
+                    System network (cannot modify)
+                  </span>
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -422,47 +436,70 @@ export default function NetworksManagePage() {
         {...getDialogProps()}
       />
 
-      <Dialog open={connectDialog.open} onOpenChange={open => !isProcessing && setConnectDialog(prev => ({ ...prev, open }))}>
+      <Dialog
+        open={connectDialog.open}
+        onOpenChange={open =>
+          !isProcessing && setConnectDialog(prev => ({ ...prev, open }))
+        }
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {connectDialog.actionType === 'connect' ? 'Connect' : 'Disconnect'} Containers
+              {connectDialog.actionType === 'connect'
+                ? 'Connect'
+                : 'Disconnect'}{' '}
+              Containers
             </DialogTitle>
             <DialogDescription>
-              {connectDialog.actionType === 'connect' 
+              {connectDialog.actionType === 'connect'
                 ? `Select containers to connect to the ${connectDialog.networkName} network.`
                 : `Select containers to disconnect from the ${connectDialog.networkName} network.`}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4 max-h-[300px] overflow-y-auto">
+          <div className="max-h-[300px] overflow-y-auto py-4">
             {containers.length === 0 ? (
-              <div className="text-center text-muted-foreground">
-                {connectDialog.actionType === 'connect' 
-                  ? 'No available containers to connect' 
+              <div className="text-muted-foreground text-center">
+                {connectDialog.actionType === 'connect'
+                  ? 'No available containers to connect'
                   : 'No connected containers to disconnect'}
               </div>
             ) : (
               <div className="space-y-2">
                 {containers.map(container => (
-                  <div key={container.id} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={container.id} 
+                  <div
+                    key={container.id}
+                    className="flex items-center space-x-2"
+                  >
+                    <Checkbox
+                      id={container.id}
                       checked={selectedContainerIds.includes(container.id)}
-                      onCheckedChange={(checked) => {
+                      onCheckedChange={checked => {
                         if (checked) {
-                          setSelectedContainerIds(prev => [...prev, container.id]);
+                          setSelectedContainerIds(prev => [
+                            ...prev,
+                            container.id,
+                          ]);
                         } else {
-                          setSelectedContainerIds(prev => prev.filter(id => id !== container.id));
+                          setSelectedContainerIds(prev =>
+                            prev.filter(id => id !== container.id),
+                          );
                         }
                       }}
                     />
-                    <label 
-                      htmlFor={container.id} 
-                      className="flex-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    <label
+                      htmlFor={container.id}
+                      className="flex-1 cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       <div className="flex items-center">
                         <span>{container.name}</span>
-                        <Badge className="ml-2" variant={container.status === "running" ? "success" : "outline"}>
+                        <Badge
+                          className="ml-2"
+                          variant={
+                            container.status === 'running'
+                              ? 'success'
+                              : 'outline'
+                          }
+                        >
                           {container.status}
                         </Badge>
                       </div>
@@ -473,13 +510,24 @@ export default function NetworksManagePage() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={closeConnectDialog} disabled={isProcessing}>
+            <Button
+              variant="outline"
+              onClick={closeConnectDialog}
+              disabled={isProcessing}
+            >
               Cancel
             </Button>
-            <Button onClick={handleContainerNetworkAction} disabled={isProcessing || selectedContainerIds.length === 0}>
-              {isProcessing 
-                ? (connectDialog.actionType === 'connect' ? "Connecting..." : "Disconnecting...") 
-                : (connectDialog.actionType === 'connect' ? "Connect" : "Disconnect")}
+            <Button
+              onClick={handleContainerNetworkAction}
+              disabled={isProcessing || selectedContainerIds.length === 0}
+            >
+              {isProcessing
+                ? connectDialog.actionType === 'connect'
+                  ? 'Connecting...'
+                  : 'Disconnecting...'
+                : connectDialog.actionType === 'connect'
+                  ? 'Connect'
+                  : 'Disconnect'}
             </Button>
           </DialogFooter>
         </DialogContent>

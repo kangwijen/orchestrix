@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { UserAvatarMenu } from '@/components/user-avatar-menu';
+import { UserAvatarMenu } from '@/components/header/user-avatar-menu';
 
 interface AppHeaderProps {
   isMobile?: boolean;

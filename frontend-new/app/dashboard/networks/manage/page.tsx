@@ -11,6 +11,8 @@ import {
   Network,
   Link as LinkIcon,
   Link2Off,
+  Check,
+  ChevronsUpDown,
 } from 'lucide-react';
 import api from '@/lib/api';
 
@@ -36,7 +38,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type Network = {
   id: string;
@@ -83,6 +98,8 @@ export default function NetworksManagePage() {
   const [selectedContainerIds, setSelectedContainerIds] = useState<string[]>(
     [],
   );
+  const [selectedContainerId, setSelectedContainerId] = useState<string>('');
+  const [comboboxOpen, setComboboxOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const openDialog = (networkId: string) => {
@@ -221,6 +238,11 @@ export default function NetworksManagePage() {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const getContainerNameById = (id: string) => {
+    const container = containers.find(c => c.id === id);
+    return container ? container.name : id;
   };
 
   const columns: ColumnDef<Network>[] = [
@@ -456,7 +478,7 @@ export default function NetworksManagePage() {
                 : `Select containers to disconnect from the ${connectDialog.networkName} network.`}
             </DialogDescription>
           </DialogHeader>
-          <div className="max-h-[300px] overflow-y-auto py-4">
+          <div className="py-4">
             {containers.length === 0 ? (
               <div className="text-muted-foreground text-center">
                 {connectDialog.actionType === 'connect'
@@ -464,48 +486,108 @@ export default function NetworksManagePage() {
                   : 'No connected containers to disconnect'}
               </div>
             ) : (
-              <div className="space-y-2">
-                {containers.map(container => (
-                  <div
-                    key={container.id}
-                    className="flex items-center space-x-2"
-                  >
-                    <Checkbox
-                      id={container.id}
-                      checked={selectedContainerIds.includes(container.id)}
-                      onCheckedChange={checked => {
-                        if (checked) {
-                          setSelectedContainerIds(prev => [
-                            ...prev,
-                            container.id,
-                          ]);
-                        } else {
-                          setSelectedContainerIds(prev =>
-                            prev.filter(id => id !== container.id),
-                          );
-                        }
-                      }}
-                    />
-                    <label
-                      htmlFor={container.id}
-                      className="flex-1 cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              <div className="space-y-4">
+                <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={comboboxOpen}
+                      className="w-full justify-between"
                     >
-                      <div className="flex items-center">
-                        <span>{container.name}</span>
+                      {selectedContainerIds.length === 0
+                        ? 'Select containers...'
+                        : `${selectedContainerIds.length} container${
+                            selectedContainerIds.length > 1 ? 's' : ''
+                          } selected`}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search containers..."
+                        className="h-9"
+                      />
+                      <CommandEmpty>No containers found.</CommandEmpty>
+                      <CommandGroup>
+                        <ScrollArea className="h-60">
+                          {containers.map(container => (
+                            <CommandItem
+                              key={container.id}
+                              value={container.id}
+                              onSelect={() => {
+                                setSelectedContainerIds(prev => {
+                                  const isSelected = prev.includes(
+                                    container.id,
+                                  );
+                                  if (isSelected) {
+                                    return prev.filter(
+                                      id => id !== container.id,
+                                    );
+                                  } else {
+                                    return [...prev, container.id];
+                                  }
+                                });
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  selectedContainerIds.includes(container.id)
+                                    ? 'opacity-100'
+                                    : 'opacity-0',
+                                )}
+                              />
+                              <div className="flex items-center">
+                                <span>{container.name}</span>
+                                <Badge
+                                  className="ml-2"
+                                  variant={
+                                    container.status === 'running'
+                                      ? 'success'
+                                      : 'outline'
+                                  }
+                                >
+                                  {container.status}
+                                </Badge>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </ScrollArea>
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                {selectedContainerIds.length > 0 && (
+                  <div className="rounded-md border p-2">
+                    <h4 className="mb-2 text-sm font-medium">
+                      Selected containers:
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedContainerIds.map(id => (
                         <Badge
-                          className="ml-2"
-                          variant={
-                            container.status === 'running'
-                              ? 'success'
-                              : 'outline'
-                          }
+                          key={id}
+                          variant="secondary"
+                          className="flex items-center gap-1"
                         >
-                          {container.status}
+                          {getContainerNameById(id)}
+                          <button
+                            onClick={() => {
+                              setSelectedContainerIds(prev =>
+                                prev.filter(prevId => prevId !== id),
+                              );
+                            }}
+                            className="hover:bg-muted ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full text-xs"
+                          >
+                            ×
+                          </button>
                         </Badge>
-                      </div>
-                    </label>
+                      ))}
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>

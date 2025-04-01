@@ -32,6 +32,12 @@ def list_networks():
         
         networks_list = []
         for network in networks:
+            network_data = client.api.inspect_network(network.id)
+            
+            connected_containers = 0
+            if "Containers" in network_data:
+                connected_containers = len(network_data["Containers"])
+            
             network_info = {
                 'id': network.short_id,
                 'name': network.name,
@@ -40,7 +46,7 @@ def list_networks():
                 'created': isoparse(network.attrs['Created']) \
                 .astimezone(pytz.UTC) \
                 .strftime('%H:%M:%S %d-%m-%Y'),
-                'containers': len(network.containers)
+                'containers': connected_containers
             }
             networks_list.append(network_info)
 
@@ -198,16 +204,17 @@ def get_network_containers(network_id):
         client = get_docker_client()
         
         network = client.networks.get(network_id)
-        connected_containers = network.containers
+        network_data = client.api.inspect_network(network.id)
         
         containers_list = []
-        for container in connected_containers:
-            container_info = {
-                'id': container.short_id,
-                'name': container.name,
-                'status': container.status,
-            }
-            containers_list.append(container_info)
+        if "Containers" in network_data and network_data["Containers"]:
+            for container_id, container_info in network_data["Containers"].items():
+                container = client.containers.get(container_id)
+                containers_list.append({
+                    'id': container.short_id,
+                    'name': container.name,
+                    'status': container.status,
+                })
             
         return jsonify(containers_list), 200
         

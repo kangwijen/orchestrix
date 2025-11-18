@@ -1,7 +1,7 @@
 # Orchestrix
 **All-in-One DevOps Management Platform**  
 
-Orchestrix is a modern DevOps management platform to streamline the management of tools like Docker, Ansible, and more. 
+Orchestrix is a modern DevOps management platform to streamline the management of tools like Docker and more. 
 
 Simplify workflows, monitor deployments, and manage your infrastructure seamlessly, all in one place.
 
@@ -55,15 +55,15 @@ Network Management
 - [x] List networks
 - [x] Create a network
 - [x] Remove a network
-- [ ] Inspect a network
+- [x] Inspect a network
 - [x] Connect a container to a network
 - [x] Disconnect a container from a network
 
 Volume Management
-- [ ] List volumes
-- [ ] Create a volume
-- [ ] Remove a volume
-- [ ] Inspect a volume
+- [x] List volumes
+- [x] Create a volume
+- [x] Remove a volume
+- [x] Inspect a volume
 - [ ] Mount a volume to a container
 - [ ] Unmount a volume from a container
 

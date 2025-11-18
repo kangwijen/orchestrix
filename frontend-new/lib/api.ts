@@ -309,6 +309,83 @@ export const networkApi = {
       throw error;
     }
   },
+
+  inspectNetwork: async (networkId: string) => {
+    try {
+      const response = await api.get(`/api/networks/inspect/${networkId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getNetworkContainers: async (networkId: string) => {
+    try {
+      const response = await api.get(`/api/networks/containers/${networkId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const volumeApi = {
+  listVolumes: async () => {
+    try {
+      const response = await api.get('/api/volumes/list');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  createVolume: async (volumeData: {
+    name?: string;
+    driver?: string;
+    options?: Record<string, string>;
+    labels?: Record<string, string>;
+  }) => {
+    try {
+      const response = await api.post('/api/volumes/create', volumeData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  removeVolume: async (
+    volumeName: string,
+    data: { password: string; force?: boolean },
+  ) => {
+    try {
+      const response = await api.delete(`/api/volumes/remove/${volumeName}`, {
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  inspectVolume: async (volumeName: string) => {
+    try {
+      const response = await api.get(`/api/volumes/inspect/${volumeName}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getVolumeContainers: async (volumeName: string) => {
+    try {
+      const response = await api.get(
+        `/api/volumes/containers/${volumeName}`,
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default api;

@@ -13,8 +13,9 @@ import {
   Link2Off,
   Check,
   ChevronsUpDown,
+  Info,
 } from 'lucide-react';
-import api from '@/lib/api';
+import api, { networkApi } from '@/lib/api';
 
 import { AppTable } from '@/components/table/app-table';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { AppDialog } from '@/components/dialog/app-dialog';
+import { AppInspect } from '@/components/dialog/app-inspect';
 import {
   Dialog,
   DialogContent,
@@ -64,10 +66,7 @@ type Network = {
 
 const removeNetwork = async (networkId: string, password: string) => {
   try {
-    const response = await api.delete(`/api/networks/remove/${networkId}`, {
-      data: { password },
-    });
-    return response.data;
+    return await networkApi.removeNetwork(networkId, password);
   } catch (error) {
     throw error;
   }
@@ -101,6 +100,11 @@ export default function NetworksManagePage() {
   const [selectedContainerId, setSelectedContainerId] = useState<string>('');
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [inspectDialog, setInspectDialog] = useState({
+    open: false,
+    networkId: null as string | null,
+    data: null as any,
+  });
 
   const openDialog = (networkId: string) => {
     setDialogState({ open: true, networkId });
@@ -142,8 +146,8 @@ export default function NetworksManagePage() {
         setLoading(true);
       }
 
-      const response = await api.get('/api/networks/list');
-      setNetworks(response.data);
+      const response = await networkApi.listNetworks();
+      setNetworks(response);
     } catch (error) {
       console.error('Error fetching networks:', error);
       toast.error('Failed to fetch networks. Please try again.');
@@ -176,6 +180,21 @@ export default function NetworksManagePage() {
     setConnectDialog(prev => ({ ...prev, open: false }));
   };
 
+  const openInspectDialog = async (networkId: string) => {
+    try {
+      const response = await networkApi.inspectNetwork(networkId);
+      setInspectDialog({
+        open: true,
+        networkId,
+        data: response,
+      });
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || 'Failed to inspect network',
+      );
+    }
+  };
+
   const fetchAvailableContainers = async (
     networkId: string,
     actionType: 'connect' | 'disconnect',
@@ -187,10 +206,10 @@ export default function NetworksManagePage() {
       } else {
         const networkInfo = networks.find(n => n.id === networkId);
         if (networkInfo && networkInfo.containers > 0) {
-          const connectedResponse = await api.get(
-            `/api/networks/containers/${networkId}`,
+          const connectedResponse = await networkApi.getNetworkContainers(
+            networkId,
           );
-          setContainers(connectedResponse.data);
+          setContainers(connectedResponse);
         } else {
           setContainers([]);
         }
@@ -209,15 +228,15 @@ export default function NetworksManagePage() {
     try {
       for (const containerId of selectedContainerIds) {
         if (connectDialog.actionType === 'connect') {
-          await api.post('/api/networks/connect', {
-            networkId: connectDialog.networkId,
+          await networkApi.connectContainer(
+            connectDialog.networkId,
             containerId,
-          });
+          );
         } else {
-          await api.post('/api/networks/disconnect', {
-            networkId: connectDialog.networkId,
+          await networkApi.disconnectContainer(
+            connectDialog.networkId,
             containerId,
-          });
+          );
         }
       }
 
@@ -341,6 +360,13 @@ export default function NetworksManagePage() {
 
               <DropdownMenuSeparator />
 
+              <DropdownMenuItem onClick={() => openInspectDialog(network.id)}>
+                <Info className="mr-2 h-4 w-4" />
+                <span>Inspect Network</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
               {!isSystemNetwork && (
                 <DropdownMenuItem
                   className="text-destructive focus:text-destructive"
@@ -456,6 +482,21 @@ export default function NetworksManagePage() {
         onOpenChange={closeDialog}
         onConfirm={handleDialogConfirm}
         {...getDialogProps()}
+      />
+
+      <AppInspect
+        open={inspectDialog.open}
+        onOpenChange={open =>
+          setInspectDialog(prev => ({ ...prev, open, data: null }))
+        }
+        resourceId={inspectDialog.networkId}
+        data={inspectDialog.data}
+        title="Network Inspection"
+        description={
+          inspectDialog.networkId
+            ? `Detailed information for network: ${inspectDialog.networkId}`
+            : 'Detailed network information'
+        }
       />
 
       <Dialog

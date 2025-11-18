@@ -224,3 +224,24 @@ def get_network_containers(network_id):
         return jsonify({"message": f"Docker API error: {str(e)}"}), 400
     except Exception as e:
         return jsonify({"message": f"Failed to get network containers: {str(e)}"}), 500
+
+@network_bp.route('/api/networks/inspect/<string:network_id>', methods=['GET'])
+@jwt_required()
+def inspect_network(network_id):
+    try:
+        validate_network_id(network_id)
+        client = get_docker_client()
+
+        network = client.networks.get(network_id)
+        network_data = client.api.inspect_network(network.id)
+
+        return jsonify(network_data), 200
+
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400
+    except docker.errors.NotFound:
+        return jsonify({"message": "Network not found"}), 404
+    except docker.errors.APIError as e:
+        return jsonify({"message": f"Docker API error: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"message": f"Failed to inspect network: {str(e)}"}), 500

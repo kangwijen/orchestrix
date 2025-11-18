@@ -615,8 +615,14 @@ export default function ContainersManagePage() {
         onOpenChange={open =>
           setInspectDialog(prev => ({ ...prev, open, data: null }))
         }
-        containerId={inspectDialog.containerId}
+        resourceId={inspectDialog.containerId}
         data={inspectDialog.data}
+        title="Container Inspection"
+        description={
+          inspectDialog.containerId
+            ? `Detailed information for container: ${inspectDialog.containerId}`
+            : 'Detailed container information'
+        }
       />
 
       <AppStats

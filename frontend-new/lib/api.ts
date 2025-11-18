@@ -187,6 +187,73 @@ export const containerApi = {
       throw error;
     }
   },
+
+  buildFromCompose: async (
+    file: File,
+    onProgress?: (progress: number) => void,
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append('composefile', file);
+
+      const response = await api.post(
+        '/api/containers/build/compose',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: progressEvent => {
+            if (progressEvent.total && onProgress) {
+              const progress = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
+              onProgress(progress);
+            }
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  pauseContainer: async (containerId: string) => {
+    try {
+      const response = await api.post(`/api/containers/pause/${containerId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  unpauseContainer: async (containerId: string) => {
+    try {
+      const response = await api.post(`/api/containers/unpause/${containerId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  inspectContainer: async (containerId: string) => {
+    try {
+      const response = await api.get(`/api/containers/inspect/${containerId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getContainerStats: async (containerId: string) => {
+    try {
+      const response = await api.get(`/api/containers/stats/${containerId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export const networkApi = {

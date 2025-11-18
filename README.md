@@ -40,16 +40,16 @@ Container Management
 - [x] List all containers
 - [x] Create a container from an image
 - [x] Create a container from custom Dockerfile
-- [ ] Create a container from custom Compose file
+- [x] Create a container from custom Compose file
 - [x] Remove a container
 - [x] Start a container
 - [x] Stop a container
 - [x] Restart a container
-- [ ] Pause a container
-- [ ] Unpause a container
-- [ ] Inspect a container
+- [x] Pause a container
+- [x] Unpause a container
+- [x] Inspect a container
 - [x] Get logs of a container
-- [ ] Get stats of a container
+- [x] Get stats of a container
 
 Network Management
 - [x] List networks

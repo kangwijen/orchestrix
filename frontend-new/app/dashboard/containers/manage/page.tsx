@@ -12,8 +12,11 @@ import {
   Trash2,
   FileText,
   Box,
+  Pause,
+  Info,
+  Activity,
 } from 'lucide-react';
-import api from '@/lib/api';
+import api, { containerApi } from '@/lib/api';
 
 import { AppTable } from '@/components/table/app-table';
 import { Button } from '@/components/ui/button';
@@ -36,6 +39,8 @@ import {
 import { toast } from 'sonner';
 import { AppDialog } from '@/components/dialog/app-dialog';
 import { AppLogs } from '@/components/dialog/app-logs';
+import { AppInspect } from '@/components/dialog/app-inspect';
+import { AppStats } from '@/components/dialog/app-stats';
 
 type Container = {
   id: string;
@@ -91,7 +96,7 @@ export default function ContainersManagePage() {
   const [refreshing, setRefreshing] = useState(false);
   const [dialogState, setDialogState] = useState<{
     open: boolean;
-    type: 'stop' | 'restart' | 'remove';
+    type: 'stop' | 'restart' | 'remove' | 'pause' | 'unpause';
     containerId: string | null;
   }>({
     open: false,
@@ -104,8 +109,20 @@ export default function ContainersManagePage() {
     containerId: null as string | null,
   });
 
+  const [inspectDialog, setInspectDialog] = useState({
+    open: false,
+    containerId: null as string | null,
+    data: null as any,
+  });
+
+  const [statsDialog, setStatsDialog] = useState({
+    open: false,
+    containerId: null as string | null,
+    data: null as any,
+  });
+
   const openDialog = (
-    type: 'stop' | 'restart' | 'remove',
+    type: 'stop' | 'restart' | 'remove' | 'pause' | 'unpause',
     containerId: string,
   ) => {
     setDialogState({ open: true, type, containerId });
@@ -119,6 +136,28 @@ export default function ContainersManagePage() {
     setLogsDialog({ open: true, containerId });
   };
 
+  const openInspectDialog = async (containerId: string) => {
+    try {
+      const data = await containerApi.inspectContainer(containerId);
+      setInspectDialog({ open: true, containerId, data });
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || 'Failed to inspect container',
+      );
+    }
+  };
+
+  const openStatsDialog = async (containerId: string) => {
+    try {
+      const data = await containerApi.getContainerStats(containerId);
+      setStatsDialog({ open: true, containerId, data });
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.message || 'Failed to get container stats',
+      );
+    }
+  };
+
   const handleDialogConfirm = async (password?: string) => {
     if (!dialogState.containerId) return;
 
@@ -129,6 +168,12 @@ export default function ContainersManagePage() {
           break;
         case 'restart':
           await handleRestartContainer(dialogState.containerId);
+          break;
+        case 'pause':
+          await handlePauseContainer(dialogState.containerId);
+          break;
+        case 'unpause':
+          await handleUnpauseContainer(dialogState.containerId);
           break;
         case 'remove':
           await removeContainer(dialogState.containerId, password || '');
@@ -161,6 +206,20 @@ export default function ContainersManagePage() {
           description: 'Are you sure you want to restart this container?',
           variant: 'default' as const,
           confirmText: 'Restart',
+        };
+      case 'pause':
+        return {
+          title: 'Pause Container',
+          description: 'Are you sure you want to pause this container?',
+          variant: 'default' as const,
+          confirmText: 'Pause',
+        };
+      case 'unpause':
+        return {
+          title: 'Unpause Container',
+          description: 'Are you sure you want to unpause this container?',
+          variant: 'default' as const,
+          confirmText: 'Unpause',
         };
       case 'remove':
         return {
@@ -234,6 +293,30 @@ export default function ContainersManagePage() {
       console.error('Error restarting container:', error);
       toast.error(
         error.response?.data?.message || 'Failed to restart container',
+      );
+    }
+  };
+
+  const handlePauseContainer = async (containerId: string) => {
+    try {
+      await containerApi.pauseContainer(containerId);
+      toast.success('Container paused successfully');
+      fetchContainers();
+    } catch (error: any) {
+      console.error('Error pausing container:', error);
+      toast.error(error.response?.data?.message || 'Failed to pause container');
+    }
+  };
+
+  const handleUnpauseContainer = async (containerId: string) => {
+    try {
+      await containerApi.unpauseContainer(containerId);
+      toast.success('Container unpaused successfully');
+      fetchContainers();
+    } catch (error: any) {
+      console.error('Error unpausing container:', error);
+      toast.error(
+        error.response?.data?.message || 'Failed to unpause container',
       );
     }
   };
@@ -339,6 +422,7 @@ export default function ContainersManagePage() {
       cell: ({ row }) => {
         const container = row.original;
         const isRunning = container.status === 'running';
+        const isPaused = container.status === 'paused';
 
         return (
           <DropdownMenu>
@@ -352,7 +436,7 @@ export default function ContainersManagePage() {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
-              {!isRunning && (
+              {!isRunning && !isPaused && (
                 <DropdownMenuItem
                   onClick={() => handleStartContainer(container.id)}
                 >
@@ -362,11 +446,28 @@ export default function ContainersManagePage() {
               )}
 
               {isRunning && (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => openDialog('stop', container.id)}
+                  >
+                    <Square className="mr-2 h-4 w-4" />
+                    <span>Stop</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => openDialog('pause', container.id)}
+                  >
+                    <Pause className="mr-2 h-4 w-4" />
+                    <span>Pause</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+
+              {isPaused && (
                 <DropdownMenuItem
-                  onClick={() => openDialog('stop', container.id)}
+                  onClick={() => openDialog('unpause', container.id)}
                 >
-                  <Square className="mr-2 h-4 w-4" />
-                  <span>Stop</span>
+                  <Play className="mr-2 h-4 w-4" />
+                  <span>Unpause</span>
                 </DropdownMenuItem>
               )}
 
@@ -377,9 +478,21 @@ export default function ContainersManagePage() {
                 <span>Restart</span>
               </DropdownMenuItem>
 
+              <DropdownMenuSeparator />
+
               <DropdownMenuItem onClick={() => openLogsDialog(container.id)}>
                 <FileText className="mr-2 h-4 w-4" />
                 <span>View Logs</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => openInspectDialog(container.id)}>
+                <Info className="mr-2 h-4 w-4" />
+                <span>Inspect</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={() => openStatsDialog(container.id)}>
+                <Activity className="mr-2 h-4 w-4" />
+                <span>Stats</span>
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
@@ -495,6 +608,24 @@ export default function ContainersManagePage() {
         onOpenChange={closeDialog}
         onConfirm={handleDialogConfirm}
         {...getDialogProps()}
+      />
+
+      <AppInspect
+        open={inspectDialog.open}
+        onOpenChange={open =>
+          setInspectDialog(prev => ({ ...prev, open, data: null }))
+        }
+        containerId={inspectDialog.containerId}
+        data={inspectDialog.data}
+      />
+
+      <AppStats
+        open={statsDialog.open}
+        onOpenChange={open =>
+          setStatsDialog(prev => ({ ...prev, open, data: null }))
+        }
+        containerId={statsDialog.containerId}
+        data={statsDialog.data}
       />
     </div>
   );

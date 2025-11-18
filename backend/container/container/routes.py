@@ -12,6 +12,8 @@ import os
 import uuid
 import shutil
 import zipfile
+import yaml
+import subprocess
 
 import re
 from datetime import datetime
@@ -112,6 +114,46 @@ def restart_container(container_id):
     except Exception as e:
         return jsonify({"message": "Operation failed"}), 400
 
+@container_bp.route('/api/containers/pause/<string:container_id>', methods=['POST'])
+@jwt_required()
+def pause_container(container_id):
+    try:
+        validate_container_id(container_id)
+        client = get_docker_client()
+        container = client.containers.get(container_id)
+        if container.status != "running":
+            return jsonify({"message": f"Container must be running to pause. Current status: {container.status}"}), 400
+        container.pause()
+        return jsonify({"message": f"Container {container_id} paused successfully."}), 200
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400
+    except docker.errors.NotFound:
+        return jsonify({"message": "Container not found"}), 404
+    except docker.errors.APIError as e:
+        return jsonify({"message": f"Error pausing container: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"message": "Operation failed"}), 400
+
+@container_bp.route('/api/containers/unpause/<string:container_id>', methods=['POST'])
+@jwt_required()
+def unpause_container(container_id):
+    try:
+        validate_container_id(container_id)
+        client = get_docker_client()
+        container = client.containers.get(container_id)
+        if container.status != "paused":
+            return jsonify({"message": f"Container is not paused. Current status: {container.status}"}), 400
+        container.unpause()
+        return jsonify({"message": f"Container {container_id} unpaused successfully."}), 200
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400
+    except docker.errors.NotFound:
+        return jsonify({"message": "Container not found"}), 404
+    except docker.errors.APIError as e:
+        return jsonify({"message": f"Error unpausing container: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"message": "Operation failed"}), 400
+
 @container_bp.route('/api/containers/remove/<string:container_id>', methods=['DELETE'])
 @jwt_required()
 def remove_container(container_id):
@@ -155,6 +197,21 @@ def get_container_logs(container_id):
         return jsonify({"message": str(e)}), 400
     except Exception as e:
         return jsonify({"message": "Failed to retrieve logs"}), 400
+
+@container_bp.route('/api/containers/inspect/<string:container_id>', methods=['GET'])
+@jwt_required()
+def inspect_container(container_id):
+    try:
+        validate_container_id(container_id)
+        client = get_docker_client()
+        container = client.containers.get(container_id)
+        return jsonify(container.attrs), 200
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400
+    except docker.errors.NotFound:
+        return jsonify({"message": "Container not found"}), 404
+    except Exception as e:
+        return jsonify({"message": "Failed to inspect container"}), 400
     
 @container_bp.route('/api/containers/stats/<string:container_id>', methods=['GET'])
 @jwt_required()
@@ -163,10 +220,12 @@ def get_container_stats(container_id):
         validate_container_id(container_id)
         client = get_docker_client()
         container = client.containers.get(container_id)
-        stats = container.stats(stream=True)
-        return (stats), 200
+        stats = container.stats(stream=False)
+        return jsonify(stats), 200
     except ValueError as e:
         return jsonify({"message": str(e)}), 400
+    except docker.errors.NotFound:
+        return jsonify({"message": "Container not found"}), 404
     except Exception as e:
         return jsonify({"message": "Failed to retrieve stats"}), 400
 
@@ -348,4 +407,57 @@ def build_from_zip():
     except Exception as e:
         current_app.logger.error(f"Error in build_from_zip: {str(e)}")
         return jsonify({"message": "Failed to build container from ZIP"}), 500
+
+@container_bp.route('/api/containers/build/compose', methods=['POST'])
+@jwt_required()
+def build_from_compose():
+    if 'composefile' not in request.files:
+        return jsonify({"message": "No compose file provided"}), 400
+
+    file = request.files['composefile']
+    if file.filename == '':
+        return jsonify({"message": "No compose file selected"}), 400
+
+    if not file.filename.endswith(('.yml', '.yaml')):
+        return jsonify({"message": "File must be a YAML file (.yml or .yaml)"}), 400
+
+    try:
+        client = get_docker_client()
+        
+        build_dir = os.path.join(tempfile.gettempdir(), f"docker_compose_{uuid.uuid4().hex}")
+        os.makedirs(build_dir, exist_ok=True)
+        
+        try:
+            compose_path = os.path.join(build_dir, "docker-compose.yml")
+            file.save(compose_path)
+            
+            result = subprocess.run(
+                ['docker-compose', '-f', compose_path, 'up', '-d'],
+                cwd=build_dir,
+                capture_output=True,
+                text=True,
+                timeout=300
+            )
+            
+            if result.returncode != 0:
+                return jsonify({
+                    "message": f"Docker Compose failed: {result.stderr}"
+                }), 400
+            
+            return jsonify({
+                "message": "Containers created successfully from compose file",
+                "output": result.stdout
+            }), 201
+            
+        finally:
+            if os.path.exists(build_dir):
+                shutil.rmtree(build_dir)
+                
+    except subprocess.TimeoutExpired:
+        return jsonify({"message": "Docker Compose operation timed out"}), 408
+    except FileNotFoundError:
+        return jsonify({"message": "docker-compose command not found. Please ensure Docker Compose is installed."}), 500
+    except Exception as e:
+        current_app.logger.error(f"Error in build_from_compose: {str(e)}")
+        return jsonify({"message": "Failed to create containers from compose file"}), 500
 
